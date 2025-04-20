@@ -1,8 +1,20 @@
 <mat-form-field>
-  <mat-label>Favorite food</mat-label>
-  <mat-select>
-    <!-- @for (food of foods; track food) {
-        <mat-option [value]="food.value">{{food.viewValue}}</mat-option>
-      } -->
+  <mat-label>Filters</mat-label>
+  <mat-select [formControl]="optionsForm">
+    @for (filter of filterOptions$ | async; track filter.key) {
+      <mat-option [value]="filter.key">{{ filter.displayName }}</mat-option>
+    }
   </mat-select>
 </mat-form-field>
+<form [formGroup]="filterForm">
+  @for (filter of activeFilters$ | async; track filter.key) {
+    @switch (filter.key) {
+      @case (filterKey.Country) {
+        <button mat-button (click)="deleteFilter(filter.key)">
+          Remove Filter
+        </button>
+        <app-country-filter [controlKey]="filter.key"></app-country-filter>
+      }
+    }
+  }
+</form>

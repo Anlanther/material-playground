@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { FormFilterComponent } from './form-filter/form-filter.component';
+import { FormFilterModule } from './form-filter/form-filter.module';
 
 @Component({
   selector: 'app-root',
-  imports: [FormFilterComponent],
+  imports: [FormFilterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
