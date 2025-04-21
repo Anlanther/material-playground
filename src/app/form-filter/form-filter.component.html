@@ -12,7 +12,7 @@
     @for (filter of activeFilters$ | async; track filter.key) {
       @switch (filter.key) {
         @case (filterKey.Country) {
-          <mat-expansion-panel>
+          <mat-expansion-panel [expanded]="filter.value.filterConfig.expanded">
             <mat-expansion-panel-header>
               <mat-panel-title>
                 {{ filter.value.filterConfig.displayName }}

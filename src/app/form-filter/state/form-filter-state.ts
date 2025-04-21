@@ -1,8 +1,8 @@
 import { FilterOption } from '../models/filter-option.model';
-import { SavedFilterJson } from '../models/saved-filter.model';
+import { SavedFilter } from '../models/saved-filter.model';
 
 export interface FormFilterState {
-  activeFilters: SavedFilterJson;
+  activeFilters: SavedFilter;
   filterOptions: FilterOption[];
 }
 
