@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
+import { map } from 'rxjs';
 import { FilterKey } from '../constants/filter-key.enum';
 import { FilterOption } from '../models/filter-option.model';
-import { SavedFilter } from '../models/saved-filter.model';
+import { FilterConfigService } from '../services/filter-config.service';
 import { DEFAULT_STATE, FormFilterState } from './form-filter-state';
 
 @Injectable({
@@ -12,69 +13,74 @@ export class FormFilterStateService extends ComponentStore<FormFilterState> {
   activeFilters$ = this.select((state) => state.activeFilters);
   filterOptions$ = this.select((state) => state.filterOptions);
 
-  constructor() {
+  // New selector to map active filters to array format
+  activeFiltersArray$ = this.activeFilters$.pipe(
+    map((filters) =>
+      Object.entries(filters).map(([key, value]) => ({
+        key: key as FilterKey,
+        value,
+      })),
+    ),
+  );
+
+  constructor(private filterConfigService: FilterConfigService) {
     super(DEFAULT_STATE);
   }
 
-  readonly initialiseFilterOptions = this.updater(
-    (state, filterOptions: FilterOption[]) => ({
+  readonly setActiveFilter = this.updater((state, filterKey: FilterKey) => ({
+    ...state,
+    activeFilters: {
+      ...state.activeFilters,
+      [filterKey]: this.filterConfigService.createActiveConfig(filterKey),
+    },
+  }));
+
+  readonly deleteActiveFilter = this.updater((state, filterKey: FilterKey) => ({
+    ...state,
+    activeFilters: Object.fromEntries(
+      Object.entries(state.activeFilters).filter(([key]) => key !== filterKey),
+    ),
+  }));
+
+  readonly updateActiveFilterValue = this.updater(
+    (state, update: { key: FilterKey; value: any }) => ({
       ...state,
-      filterOptions,
+      activeFilters: {
+        ...state.activeFilters,
+        [update.key]: {
+          ...state.activeFilters[update.key],
+          filterForm: {
+            key: update.key,
+            [update.key]: update.value,
+          },
+        },
+      },
     }),
   );
 
-  readonly deleteFilterOption = this.updater((state, filterKey: FilterKey) => ({
+  readonly setFilterOptions = this.updater(
+    (state, options: FilterOption[]) => ({
+      ...state,
+      filterOptions: options,
+    }),
+  );
+
+  readonly addFilterOption = this.updater((state, filterKey: FilterKey) => ({
+    ...state,
+    filterOptions: [
+      ...state.filterOptions,
+      {
+        key: filterKey,
+        displayName:
+          this.filterConfigService.getFilterConfig(filterKey).displayName,
+      },
+    ],
+  }));
+
+  readonly removeFilterOption = this.updater((state, filterKey: FilterKey) => ({
     ...state,
     filterOptions: state.filterOptions.filter(
       (option) => option.key !== filterKey,
     ),
   }));
-
-  readonly addFilterOption = this.updater(
-    (state, filterOption: FilterOption) => ({
-      ...state,
-      filterOptions: [...state.filterOptions, filterOption],
-    }),
-  );
-
-  readonly initialiseActiveFilters = this.updater(
-    (state, activeFilters: SavedFilter) => ({
-      ...state,
-      activeFilters,
-    }),
-  );
-
-  readonly setActiveFilter = this.updater(
-    (state, activeFilter: SavedFilter) => ({
-      ...state,
-      activeFilters: { ...state.activeFilters, ...activeFilter },
-    }),
-  );
-
-  readonly deleteActiveFilter = this.updater((state, filterKey: FilterKey) => ({
-    ...state,
-    activeFilters: Object.keys(state.activeFilters).reduce(
-      (acc: Record<string, unknown>, key) => {
-        if (key !== filterKey) {
-          acc[key as keyof typeof state.activeFilters] =
-            state.activeFilters[key as keyof typeof state.activeFilters];
-        }
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    ),
-  }));
-
-  readonly updateActiveFilter = this.updater(
-    (state, updatedFilter: { key: FilterKey; value: unknown }) => ({
-      ...state,
-      activeFilters: {
-        ...state.activeFilters,
-        [updatedFilter.key]: {
-          ...state.activeFilters[updatedFilter.key],
-          filterForm: { [updatedFilter.key]: updatedFilter.value },
-        },
-      },
-    }),
-  );
 }
