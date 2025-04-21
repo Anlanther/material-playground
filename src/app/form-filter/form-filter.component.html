@@ -15,6 +15,12 @@
         </button>
         <app-country-filter [controlKey]="filter.key"></app-country-filter>
       }
+      @case (filterKey.Date) {
+        <button mat-button (click)="deleteFilter(filter.key)">
+          Remove Filter
+        </button>
+        <app-date-filter [controlKey]="filter.key"></app-date-filter>
+      }
     }
   }
 </form>
