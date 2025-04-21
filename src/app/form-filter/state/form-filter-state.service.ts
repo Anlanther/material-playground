@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { FilterKey } from '../constants/filter-key.enum';
 import { FilterOption } from '../models/filter-option.model';
-import { SavedFilterJson } from '../models/saved-filter.model';
+import { SavedFilter } from '../models/saved-filter.model';
 import { DEFAULT_STATE, FormFilterState } from './form-filter-state';
 
 @Injectable({
@@ -38,32 +38,26 @@ export class FormFilterStateService extends ComponentStore<FormFilterState> {
   );
 
   readonly initialiseActiveFilters = this.updater(
-    (state, activeFilters: SavedFilterJson) => ({
+    (state, activeFilters: SavedFilter) => ({
       ...state,
       activeFilters,
     }),
   );
 
   readonly setActiveFilter = this.updater(
-    (state, activeFilter: SavedFilterJson) => ({
+    (state, activeFilter: SavedFilter) => ({
       ...state,
       activeFilters: { ...state.activeFilters, ...activeFilter },
     }),
   );
 
-  readonly deleteActiveFilter = this.updater((state, filterKey: FilterKey) => ({
-    ...state,
-    activeFilters: Object.keys(state.activeFilters).reduce(
-      (acc: Record<string, unknown>, key) => {
-        if (key !== filterKey) {
-          acc[key as keyof typeof state.activeFilters] =
-            state.activeFilters[key as keyof typeof state.activeFilters];
-        }
-        return acc;
-      },
-      {} as Record<string, unknown>,
-    ),
-  }));
+  readonly deleteActiveFilter = this.updater((state, filterKey: FilterKey) => {
+    const { [filterKey]: _, ...remainingFilters } = state.activeFilters;
+    return {
+      ...state,
+      activeFilters: remainingFilters,
+    };
+  });
 
   readonly updateActiveFilter = this.updater(
     (state, updatedFilter: { key: FilterKey; value: unknown }) => ({
