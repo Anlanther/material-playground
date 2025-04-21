@@ -1,6 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { distinctUntilChanged, map, Observable, Subscription, tap } from 'rxjs';
+import { distinctUntilChanged, map, Observable, Subscription } from 'rxjs';
 import { FilterBroadcast } from '../models/broadcast-type.model';
 import { FILTER_DEFAULT_MAP } from './constants/filter-default-map.constant';
 import { FilterKey } from './constants/filter-key.enum';
@@ -12,7 +12,10 @@ import { FormFilterStateService } from './state/form-filter-state.service';
 
 const SAVED_FILTERS: SavedFilterJson = {
   [FilterKey.Country]: {
-    filterForm: { [FilterKey.Country]: ['USA', 'Canada'] },
+    filterForm: {
+      [FilterKey.Country]: ['USA', 'Canada'],
+      key: FilterKey.Country,
+    },
     filterConfig: {
       displayName: 'Country',
     },
@@ -42,7 +45,6 @@ export class FormFilterComponent implements OnDestroy {
     private broadcastFactory: BroadcastFactoryService,
   ) {
     this.activeFilters$ = this.stateService.activeFilters$.pipe(
-      tap((filters) => console.log('Active Filters:', filters)),
       map((filterConfig) =>
         Object.entries(filterConfig).map(([key, value]) => ({
           key: key as FilterKey,
@@ -77,7 +79,12 @@ export class FormFilterComponent implements OnDestroy {
             filter: this.broadcastFactory.getBroadcastPayload(value),
           };
 
-          this.stateService.updateActiveFilter(value);
+          Object.entries(value).forEach(([key, value]) => {
+            this.stateService.updateActiveFilter({
+              key: key as FilterKey,
+              value,
+            });
+          });
 
           console.log(
             'Filter FormValue',
@@ -101,7 +108,23 @@ export class FormFilterComponent implements OnDestroy {
         displayName: filterConfig.displayName,
       }));
 
-    this.stateService.initialiseActiveFilters(SAVED_FILTERS);
+    const activeFilters: SavedFilterJson = Object.entries(SAVED_FILTERS).reduce(
+      (acc, [key, value]) => {
+        const defaultConfig = FILTER_DEFAULT_MAP.get(key as FilterKey);
+        if (!defaultConfig) {
+          console.error(`Filter option with key ${key} not found`);
+          return acc;
+        }
+        acc[key as FilterKey] = {
+          filterForm: value.filterForm,
+          filterConfig: defaultConfig.filterConfig,
+        };
+        return acc;
+      },
+      {} as SavedFilterJson,
+    );
+    this.stateService.initialiseActiveFilters(activeFilters);
+
     this.stateService.initialiseFilterOptions(inactiveFilterOptions);
   }
 
@@ -110,7 +133,7 @@ export class FormFilterComponent implements OnDestroy {
       [key]: Object.fromEntries(FILTER_DEFAULT_MAP)[key],
     };
 
-    this.stateService.updateActiveFilter(filter);
+    this.stateService.setActiveFilter(filter);
   }
 
   deleteFilter(key: FilterKey) {

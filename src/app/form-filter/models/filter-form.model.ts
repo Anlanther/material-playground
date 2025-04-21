@@ -2,10 +2,12 @@ import { FilterKey } from '../constants/filter-key.enum';
 
 export type FilterForm = CountryFilter | DateFilter;
 
-interface CountryFilter {
+export interface CountryFilter {
+  key: FilterKey.Country;
   [FilterKey.Country]: string[];
 }
 
-interface DateFilter {
+export interface DateFilter {
+  key: FilterKey.Date;
   [FilterKey.Date]: string;
 }

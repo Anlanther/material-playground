@@ -44,7 +44,7 @@ export class FormFilterStateService extends ComponentStore<FormFilterState> {
     }),
   );
 
-  readonly updateActiveFilter = this.updater(
+  readonly setActiveFilter = this.updater(
     (state, activeFilter: SavedFilterJson) => ({
       ...state,
       activeFilters: { ...state.activeFilters, ...activeFilter },
@@ -64,4 +64,17 @@ export class FormFilterStateService extends ComponentStore<FormFilterState> {
       {} as Record<string, unknown>,
     ),
   }));
+
+  readonly updateActiveFilter = this.updater(
+    (state, updatedFilter: { key: FilterKey; value: unknown }) => ({
+      ...state,
+      activeFilters: {
+        ...state.activeFilters,
+        [updatedFilter.key]: {
+          ...state.activeFilters[updatedFilter.key],
+          filterForm: { [updatedFilter.key]: updatedFilter.value },
+        },
+      },
+    }),
+  );
 }

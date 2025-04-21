@@ -5,7 +5,7 @@ export const FILTER_DEFAULT_MAP: Map<FilterKey, ActiveFilterConfig> = new Map([
   [
     FilterKey.Country,
     {
-      filterForm: { [FilterKey.Country]: [] },
+      filterForm: { [FilterKey.Country]: [], key: FilterKey.Country },
       filterConfig: {
         displayName: 'Country',
       },
@@ -14,7 +14,7 @@ export const FILTER_DEFAULT_MAP: Map<FilterKey, ActiveFilterConfig> = new Map([
   [
     FilterKey.Date,
     {
-      filterForm: { [FilterKey.Date]: '2023-10-01' },
+      filterForm: { [FilterKey.Date]: '2023-10-01', key: FilterKey.Date },
       filterConfig: {
         displayName: 'Date',
       },
