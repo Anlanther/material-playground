@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { distinctUntilChanged, map, Observable, Subscription } from 'rxjs';
 import { FilterBroadcast } from '../models/broadcast-type.model';
@@ -28,7 +28,7 @@ const SAVED_FILTERS: SavedFilter = {
   templateUrl: './form-filter.component.html',
   styleUrl: './form-filter.component.scss',
 })
-export class FormFilterComponent implements OnDestroy {
+export class FormFilterComponent implements OnInit, OnDestroy {
   activeFilters$: Observable<{ key: FilterKey; value: ActiveFilterConfig }[]>;
   filterOptions$: Observable<FilterOption[]>;
 
@@ -53,8 +53,6 @@ export class FormFilterComponent implements OnDestroy {
       ),
     );
     this.filterOptions$ = this.stateService.filterOptions$;
-
-    this.initialiseFilters();
 
     this.subs.add(
       this.optionsForm.valueChanges
@@ -94,6 +92,10 @@ export class FormFilterComponent implements OnDestroy {
           );
         }),
     );
+  }
+
+  ngOnInit(): void {
+    this.initialiseFilters();
   }
 
   ngOnDestroy() {
