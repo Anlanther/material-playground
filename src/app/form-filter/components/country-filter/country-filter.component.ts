@@ -1,7 +1,7 @@
 import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup } from '@angular/forms';
-import { COUNTRY_FILTER_OPTIONS } from '../../constants/dummy-data.constant';
 import { FilterKey } from '../../constants/filter-key.enum';
+import { COUNTRY_FILTER_OPTIONS } from '../../dummy-data/country-data.constant';
 import { ActiveFilterConfig } from '../../models/active-filter-config.model';
 
 @Component({
@@ -30,6 +30,14 @@ export class CountryFilterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.initialiseForm();
+  }
+
+  ngOnDestroy() {
+    this.parentFormGroup.removeControl(this.controlKey());
+  }
+
+  initialiseForm() {
     const defaultValue = this.defaultValue();
     if (!defaultValue) {
       this.parentFormGroup.addControl(
@@ -46,9 +54,5 @@ export class CountryFilterComponent implements OnInit, OnDestroy {
         }),
       );
     }
-  }
-
-  ngOnDestroy() {
-    this.parentFormGroup.removeControl(this.controlKey());
   }
 }

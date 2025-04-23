@@ -10,9 +10,15 @@ export const FILTER_DEFAULTS: SavedFilter = {
     },
   },
   [FilterKey.Date]: {
-    filterForm: { [FilterKey.Date]: '2023-10-01', key: FilterKey.Date },
+    filterForm: { [FilterKey.Date]: '', key: FilterKey.Date },
     filterConfig: {
       displayName: 'Date',
+    },
+  },
+  [FilterKey.Industry]: {
+    filterForm: { [FilterKey.Industry]: [], key: FilterKey.Industry },
+    filterConfig: {
+      displayName: 'Industry',
     },
   },
 };
