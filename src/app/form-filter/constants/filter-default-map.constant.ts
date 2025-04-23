@@ -16,9 +16,15 @@ export const FILTER_DEFAULTS: SavedFilter = {
     },
   },
   [FilterKey.Industry]: {
-    filterForm: { [FilterKey.Industry]: [], key: FilterKey.Industry },
+    filterForm: { [FilterKey.Industry]: '', key: FilterKey.Industry },
     filterConfig: {
       displayName: 'Industry',
+    },
+  },
+  [FilterKey.Company]: {
+    filterForm: { [FilterKey.Company]: [], key: FilterKey.Company },
+    filterConfig: {
+      displayName: 'Company',
     },
   },
 };

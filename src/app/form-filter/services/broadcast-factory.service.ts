@@ -16,6 +16,7 @@ export class BroadcastFactoryService {
     [FilterKey.Country]: (value) => this.getCountryPayload(value),
     [FilterKey.Date]: (value) => this.getDatePayload(value),
     [FilterKey.Industry]: (value) => this.getIndustryPayload(value),
+    [FilterKey.Company]: (value) => this.getCompanyPayload(value),
   };
 
   getBroadcastPayload(value: Partial<{}>): BroadcastPayload[] {
@@ -44,11 +45,20 @@ export class BroadcastFactoryService {
   }
 
   private getIndustryPayload(value: unknown): BroadcastPayload {
-    const industries = value as string[];
+    const industry = value as string;
 
     return {
       key: FilterBroadcastKey.Industry,
-      industries,
+      industry,
+    };
+  }
+
+  private getCompanyPayload(value: unknown): BroadcastPayload {
+    const companies = value as string[];
+
+    return {
+      key: FilterBroadcastKey.Company,
+      companies,
     };
   }
 

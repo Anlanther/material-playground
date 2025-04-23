@@ -55,6 +55,19 @@
             ></app-industry-filter>
           </mat-expansion-panel>
         }
+        @case (filterKey.Company) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-company-filter [controlKey]="filter.key"></app-company-filter>
+          </mat-expansion-panel>
+        }
       }
     }
   </mat-accordion>

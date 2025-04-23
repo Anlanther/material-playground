@@ -1,13 +1,13 @@
 import { Component, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { ControlContainer, FormControl, FormGroup } from '@angular/forms';
 import { of, Subscription } from 'rxjs';
-import { INDUSTRY_FILTER_OPTIONS } from '../../dummy-data/industry-data.constant';
+import { COMPANY_FILTER_OPTIONS } from '../../dummy-data/company-data.constant';
 
 @Component({
   standalone: false,
-  selector: 'app-industry-filter',
-  templateUrl: './industry-filter.component.html',
-  styleUrl: './industry-filter.component.scss',
+  selector: 'app-company-filter',
+  templateUrl: './company-filter.component.html',
+  styleUrl: './company-filter.component.scss',
   viewProviders: [
     {
       provide: ControlContainer,
@@ -15,7 +15,7 @@ import { INDUSTRY_FILTER_OPTIONS } from '../../dummy-data/industry-data.constant
     },
   ],
 })
-export class IndustryFilterComponent implements OnInit, OnDestroy {
+export class CompanyFilterComponent implements OnInit, OnDestroy {
   controlKey = input.required<string>();
   parentContainer = inject(ControlContainer);
 
@@ -24,6 +24,7 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
   selectedOptions: string[] = [];
 
   subs = new Subscription();
+  inputForm = new FormControl('', { nonNullable: true });
 
   get parentFormGroup() {
     return this.parentContainer.control as FormGroup;
@@ -31,7 +32,7 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.subs.add(
-      of(INDUSTRY_FILTER_OPTIONS).subscribe(
+      of(COMPANY_FILTER_OPTIONS).subscribe(
         (options) => (this.options = options),
       ),
     );
@@ -41,11 +42,9 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
     this.initialiseForm();
 
     this.subs.add(
-      this.parentFormGroup.controls[this.controlKey()].valueChanges.subscribe(
-        () => {
-          this.filterOptions();
-        },
-      ),
+      this.inputForm.valueChanges.subscribe(() => {
+        this.filterOptions();
+      }),
     );
   }
 
@@ -62,8 +61,7 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
   }
 
   filterOptions() {
-    const value =
-      this.parentFormGroup.controls[this.controlKey()].value?.toLowerCase();
+    const value = this.inputForm.value?.toLowerCase();
 
     if (value) {
       this.filteredOptions = this.options.filter(
@@ -78,6 +76,20 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
 
   removeOption(option: string) {
     this.selectedOptions.push(option);
+    this.inputForm.setValue('');
+    this.parentFormGroup.controls[this.controlKey()].setValue(
+      this.selectedOptions,
+    );
+    this.filterOptions();
+  }
+
+  removeSelected(company: string) {
+    this.selectedOptions = this.selectedOptions.filter(
+      (option) => option !== company,
+    );
+    this.parentFormGroup.controls[this.controlKey()].setValue(
+      this.selectedOptions,
+    );
     this.filterOptions();
   }
 }

@@ -1,6 +1,10 @@
 import { FilterKey } from '../constants/filter-key.enum';
 
-export type FilterForm = CountryFilter | DateFilter | IndustryFilter;
+export type FilterForm =
+  | CountryFilter
+  | DateFilter
+  | IndustryFilter
+  | CompanyFilter;
 
 export interface CountryFilter {
   key: FilterKey.Country;
@@ -14,5 +18,10 @@ export interface DateFilter {
 
 export interface IndustryFilter {
   key: FilterKey.Industry;
-  [FilterKey.Industry]: string[];
+  [FilterKey.Industry]: string;
+}
+
+export interface CompanyFilter {
+  key: FilterKey.Company;
+  [FilterKey.Company]: string[];
 }

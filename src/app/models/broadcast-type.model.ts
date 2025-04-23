@@ -3,12 +3,17 @@ export interface FilterBroadcast {
   filter: BroadcastPayload[];
 }
 
-export type BroadcastPayload = CountryPayload | DatePayload | IndustryPayload;
+export type BroadcastPayload =
+  | CountryPayload
+  | DatePayload
+  | IndustryPayload
+  | CompanyPayload;
 
 export enum FilterBroadcastKey {
   Country = 'country',
   Date = 'date',
   Industry = 'industry',
+  Company = 'company',
 }
 
 interface CountryPayload {
@@ -23,5 +28,10 @@ interface DatePayload {
 
 interface IndustryPayload {
   key: FilterBroadcastKey.Industry;
-  industries: string[];
+  industry: string;
+}
+
+interface CompanyPayload {
+  key: FilterBroadcastKey.Company;
+  companies: string[];
 }
