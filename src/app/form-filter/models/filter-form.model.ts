@@ -4,7 +4,8 @@ export type FilterForm =
   | CountryFilter
   | DateFilter
   | IndustryFilter
-  | CompanyFilter;
+  | CompanyFilter
+  | RatingFilter;
 
 export interface CountryFilter {
   key: FilterKey.Country;
@@ -24,4 +25,9 @@ export interface IndustryFilter {
 export interface CompanyFilter {
   key: FilterKey.Company;
   [FilterKey.Company]: string[];
+}
+
+export interface RatingFilter {
+  key: FilterKey.Rating;
+  [FilterKey.Rating]: string[];
 }

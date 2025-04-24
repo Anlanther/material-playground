@@ -27,4 +27,10 @@ export const FILTER_DEFAULTS: SavedFilter = {
       displayName: 'Company',
     },
   },
+  [FilterKey.Rating]: {
+    filterForm: { [FilterKey.Rating]: [], key: FilterKey.Rating },
+    filterConfig: {
+      displayName: 'Rating',
+    },
+  },
 };

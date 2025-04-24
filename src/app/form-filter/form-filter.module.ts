@@ -6,6 +6,7 @@ import { CompanyFilterComponent } from './components/company-filter/company-filt
 import { CountryFilterComponent } from './components/country-filter/country-filter.component';
 import { DateFilterComponent } from './components/date-filter/date-filter.component';
 import { IndustryFilterComponent } from './components/industry-filter/industry-filter.component';
+import { RatingFilterComponent } from './components/rating-filter/rating-filter.component';
 import { FormFilterComponent } from './form-filter.component';
 
 @NgModule({
@@ -15,6 +16,7 @@ import { FormFilterComponent } from './form-filter.component';
     DateFilterComponent,
     IndustryFilterComponent,
     CompanyFilterComponent,
+    RatingFilterComponent,
   ],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MaterialModule],
   exports: [FormFilterComponent, CountryFilterComponent, DateFilterComponent],

@@ -3,4 +3,5 @@ export enum FilterKey {
   Date = 'date',
   Industry = 'industry',
   Company = 'company',
+  Rating = 'rating',
 }
