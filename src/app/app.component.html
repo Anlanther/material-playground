@@ -1,1 +1,4 @@
-<app-form-filter></app-form-filter>
+<app-form-filter
+  [widgetInput]="filterState()"
+  (savedState)="updateSavedState($event)"
+></app-form-filter>

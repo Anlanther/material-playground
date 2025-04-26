@@ -29,5 +29,5 @@ export interface CompanyFilter {
 
 export interface RatingFilter {
   key: FilterKey.Rating;
-  [FilterKey.Rating]: string[];
+  [FilterKey.Rating]: { a: boolean; b: boolean; c: boolean };
 }

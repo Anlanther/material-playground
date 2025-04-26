@@ -57,7 +57,7 @@ export class IndustryFilterComponent implements OnInit, OnDestroy {
   initialiseForm() {
     this.parentFormGroup.addControl(
       this.controlKey(),
-      new FormControl([], { nonNullable: true }),
+      new FormControl('', { nonNullable: true }),
     );
   }
 

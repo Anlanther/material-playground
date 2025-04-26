@@ -28,7 +28,10 @@ export const FILTER_DEFAULTS: SavedFilter = {
     },
   },
   [FilterKey.Rating]: {
-    filterForm: { [FilterKey.Rating]: [], key: FilterKey.Rating },
+    filterForm: {
+      [FilterKey.Rating]: { a: false, b: false, c: false },
+      key: FilterKey.Rating,
+    },
     filterConfig: {
       displayName: 'Rating',
     },

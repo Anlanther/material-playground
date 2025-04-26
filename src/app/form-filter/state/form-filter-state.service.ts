@@ -66,7 +66,10 @@ export class FormFilterStateService extends ComponentStore<FormFilterState> {
         ...state.activeFilters,
         [updatedFilter.key]: {
           ...state.activeFilters[updatedFilter.key],
-          filterForm: { [updatedFilter.key]: updatedFilter.value },
+          filterForm: {
+            [updatedFilter.key]: updatedFilter.value,
+            key: updatedFilter.key,
+          },
         },
       },
     }),

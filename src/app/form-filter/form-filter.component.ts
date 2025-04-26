@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, input, OnDestroy, OnInit, output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { distinctUntilChanged, map, Observable, Subscription } from 'rxjs';
+import { distinctUntilChanged, map, Observable, Subscription, tap } from 'rxjs';
 import { FilterBroadcast } from '../models/broadcast-type.model';
+import { WidgetInput } from '../models/widget-input.model';
 import { FILTER_DEFAULTS } from './constants/filter-default-map.constant';
 import { FilterKey } from './constants/filter-key.enum';
 import { ActiveFilterConfig } from './models/active-filter-config.model';
@@ -10,18 +11,6 @@ import { SavedFilter } from './models/saved-filter.model';
 import { BroadcastFactoryService } from './services/broadcast-factory.service';
 import { FormFilterStateService } from './state/form-filter-state.service';
 
-const SAVED_FILTERS: SavedFilter = {
-  [FilterKey.Country]: {
-    filterForm: {
-      [FilterKey.Country]: ['USA', 'Canada'],
-      key: FilterKey.Country,
-    },
-    filterConfig: {
-      displayName: 'Country',
-    },
-  },
-};
-
 @Component({
   standalone: false,
   selector: 'app-form-filter',
@@ -29,6 +18,9 @@ const SAVED_FILTERS: SavedFilter = {
   styleUrl: './form-filter.component.scss',
 })
 export class FormFilterComponent implements OnInit, OnDestroy {
+  widgetInput = input.required<WidgetInput>();
+  savedState = output<SavedFilter>();
+
   activeFilters$: Observable<{ key: FilterKey; value: ActiveFilterConfig }[]>;
   filterOptions$: Observable<FilterOption[]>;
 
@@ -92,6 +84,19 @@ export class FormFilterComponent implements OnInit, OnDestroy {
           );
         }),
     );
+
+    this.subs.add(
+      this.stateService.activeFilters$
+        .pipe(
+          distinctUntilChanged((prev, curr) => {
+            return JSON.stringify(prev) === JSON.stringify(curr);
+          }),
+          tap((activeFilters) => {
+            this.savedState.emit(activeFilters);
+          }),
+        )
+        .subscribe(),
+    );
   }
 
   ngOnInit(): void {
@@ -103,16 +108,18 @@ export class FormFilterComponent implements OnInit, OnDestroy {
   }
 
   initialiseFilters() {
+    const savedFilters = this.widgetInput().state as SavedFilter;
+
     const inactiveFilterOptions: FilterOption[] = Object.entries(
       FILTER_DEFAULTS,
     )
-      .filter(([key]) => !SAVED_FILTERS[key as FilterKey])
+      .filter(([key]) => !savedFilters[key as FilterKey])
       .map(([key, { filterConfig }]) => ({
         key: key as FilterKey,
         displayName: filterConfig.displayName,
       }));
 
-    const activeFilters: SavedFilter = Object.entries(SAVED_FILTERS).reduce(
+    const activeFilters: SavedFilter = Object.entries(savedFilters).reduce(
       (acc, [key, value]) => {
         const defaultConfig = FILTER_DEFAULTS[key as FilterKey];
         if (!defaultConfig) {
