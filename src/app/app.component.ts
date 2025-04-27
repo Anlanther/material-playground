@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { ButtonComponent } from './button/button.component';
 import { FILTER_INPUT } from './dummy-data/fund-input-dummy';
 import { FormFilterModule } from './form-filter/form-filter.module';
 import { SavedFilter } from './form-filter/models/saved-filter.model';
@@ -6,7 +7,7 @@ import { WidgetInput } from './models/widget-input.model';
 
 @Component({
   selector: 'app-root',
-  imports: [FormFilterModule],
+  imports: [FormFilterModule, ButtonComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

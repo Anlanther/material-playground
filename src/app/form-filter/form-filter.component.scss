@@ -1,0 +1,10 @@
+@use "@angular/material" as mat;
+
+:root {
+  @include mat.expansion-overrides(
+    (
+      container-background-color: orange,
+      container-text-color: red,
+    )
+  );
+}
