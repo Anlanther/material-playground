@@ -1,0 +1,87 @@
+<mat-form-field appearance="outline">
+  <mat-label>Filters</mat-label>
+  <mat-select [formControl]="optionsForm">
+    @for (filter of filterOptions$ | async; track filter.key) {
+      <mat-option [value]="filter.key">{{ filter.displayName }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+
+<form [formGroup]="filterForm">
+  <mat-accordion multi displayMode="flat" togglePosition="before">
+    @for (filter of activeFilters$ | async; track filter.key) {
+      @switch (filter.key) {
+        @case (filterKey.Country) {
+          <mat-expansion-panel [expanded]="filter.value.filterConfig.expanded">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-country-filter
+              [controlKey]="filter.key"
+              [defaultValue]="filter.value"
+            ></app-country-filter>
+          </mat-expansion-panel>
+        }
+        @case (filterKey.Date) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-date-filter [controlKey]="filter.key"></app-date-filter>
+          </mat-expansion-panel>
+        }
+        @case (filterKey.Industry) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-industry-filter
+              [controlKey]="filter.key"
+            ></app-industry-filter>
+          </mat-expansion-panel>
+        }
+        @case (filterKey.Company) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-company-filter [controlKey]="filter.key"></app-company-filter>
+          </mat-expansion-panel>
+        }
+        @case (filterKey.Rating) {
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ filter.value.filterConfig.displayName }}
+              </mat-panel-title>
+              <button mat-icon-button (click)="deleteFilter(filter.key)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-expansion-panel-header>
+            <app-rating-filter [controlKey]="filter.key"></app-rating-filter>
+          </mat-expansion-panel>
+        }
+      }
+    }
+  </mat-accordion>
+</form>

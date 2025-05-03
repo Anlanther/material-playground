@@ -1,0 +1,24 @@
+<nav
+  mat-tab-nav-bar
+  focusOnNavigation
+  mat-stretch-tabs="false"
+  [tabPanel]="panel"
+  class="tabs"
+>
+  @for (workspace of workspaces; track workspace) {
+    <a
+      mat-tab-link
+      [routerLink]="'/' + workspace"
+      routerLinkActive
+      #rla="routerLinkActive"
+      [active]="rla.isActive"
+      [class.isInactive]="!rla.isActive"
+    >
+      {{ workspace }}
+    </a>
+  }
+</nav>
+<div class="gap"></div>
+<mat-tab-nav-panel #panel>
+  <router-outlet></router-outlet>
+</mat-tab-nav-panel>

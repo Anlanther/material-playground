@@ -1,0 +1,12 @@
+<div class="grid-container">
+  @if (workspaceName$ | async; as workspaceName) {
+    @switch (workspaceName) {
+      @case (workspace.Dashboard) {
+        <app-workspace-selector></app-workspace-selector>
+      }
+      @case (workspace.Filter) {
+        <app-form-filter [widgetInput]="filterState()"></app-form-filter>
+      }
+    }
+  }
+</div>

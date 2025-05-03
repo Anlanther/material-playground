@@ -1,7 +1,11 @@
 @use "@angular/material" as mat;
 @use "./app/styles/theme-colors" as my-theme;
-@use "./app/form-filter/form-filter.component";
-@use "./app/button/button.component";
+@use "./app/styles/vars" as vars;
+
+body {
+  margin: 0;
+  padding: 0;
+}
 
 html {
   color-scheme: light;
@@ -12,7 +16,34 @@ html {
         tertiary: my-theme.$tertiary-palette,
       ),
       typography: Roboto,
-      density: 0,
+      density: -5,
+    )
+  );
+}
+
+:root {
+  @include mat.button-overrides(
+    (
+      filled-container-shape: vars.$border-radius,
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      background-color: white,
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      row-item-outline-width: 0,
+    )
+  );
+
+  @include mat.form-field-overrides(
+    (
+      filled-container-shape: vars.$border-radius,
+      outlined-outline-color: vars.$neutral-variant,
     )
   );
 }

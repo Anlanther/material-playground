@@ -1,0 +1,26 @@
+@use "@angular/material" as mat;
+@use "../../styles/vars" as vars;
+
+.isInactive {
+  background-color: var(--mat-sys-surface-variant);
+  border-radius: vars.$border-radius;
+}
+
+.tabs {
+  margin: 5px 0;
+
+  @include mat.tabs-overrides(
+    (
+      divider-height: 0,
+      active-indicator-height: 100vh,
+      active-indicator-color: white,
+      active-focus-indicator-color: white,
+      active-hover-indicator-color: white,
+    )
+  );
+}
+
+.gap {
+  height: 5px;
+  background-color: var(--mat-sys-surface-variant);
+}

@@ -1,0 +1,41 @@
+@use "@angular/material" as mat;
+@use "../../styles/vars" as vars;
+
+.button-accent {
+  @include mat.button-overrides(
+    (
+      filled-container-color: vars.$tertiary,
+      filled-label-text-color: black,
+      filled-container-height: 36px,
+    )
+  );
+}
+
+.table-tabs {
+  background-color: vars.$neutral-variant;
+  @include mat.tabs-overrides(
+    (
+      active-indicator-height: 100vh,
+      active-indicator-color: white,
+      active-focus-indicator-color: white,
+      divider-height: 0,
+      active-hover-indicator-color: white,
+    )
+  );
+}
+
+.discovery {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 36px 56px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+
+  .form {
+    width: 40vw;
+  }
+}

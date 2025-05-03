@@ -1,0 +1,16 @@
+<mat-form-field appearance="outline">
+  <input
+    matInput
+    [formControlName]="controlKey()"
+    [matAutocomplete]="auto"
+    (input)="filterOptions()"
+    placeholder="Type something..."
+  />
+  <mat-autocomplete #auto="matAutocomplete">
+    @for (option of filteredOptions; track option) {
+      <mat-option [value]="option" (onSelectionChange)="removeOption(option)">
+        {{ option }}
+      </mat-option>
+    }
+  </mat-autocomplete>
+</mat-form-field>

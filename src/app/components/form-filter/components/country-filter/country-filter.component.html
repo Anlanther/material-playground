@@ -1,0 +1,21 @@
+<mat-form-field appearance="outline">
+  <mat-label>Countries</mat-label>
+  <mat-select [formControlName]="controlKey()" multiple>
+    <mat-select-trigger>
+      {{ parentFormGroup.get(controlKey())?.value?.[0] || "" }}
+      @if ((parentFormGroup.get(controlKey())?.value?.length || 0) > 1) {
+        <span>
+          (+{{ (parentFormGroup.get(controlKey())?.value?.length || 0) - 1 }}
+          {{
+            parentFormGroup.get(controlKey())?.value?.length === 2
+              ? "other"
+              : "others"
+          }})
+        </span>
+      }
+    </mat-select-trigger>
+    @for (country of countries; track country) {
+      <mat-option [value]="country">{{ country }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
