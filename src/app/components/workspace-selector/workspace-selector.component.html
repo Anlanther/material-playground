@@ -3,7 +3,13 @@
     <mat-form-field appearance="outline" class="form">
       <input matInput [formControl]="form" placeholder="Search" />
     </mat-form-field>
-    <button mat-flat-button class="actions button-accent">Accent Button</button>
+    <button
+      mat-flat-button
+      (click)="toggleTheme()"
+      class="actions button-accent"
+    >
+      Accent Button
+    </button>
   </div>
 
   <mat-tab-group class="table-tabs">

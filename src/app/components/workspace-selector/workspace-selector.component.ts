@@ -16,4 +16,6 @@ import { DiscoveryTableComponent } from './discovery-table/discovery-table.compo
 })
 export class WorkspaceSelectorComponent {
   form = new FormControl('');
+
+  toggleTheme() {}
 }
