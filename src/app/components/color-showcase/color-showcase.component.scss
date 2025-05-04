@@ -1,0 +1,29 @@
+@use "@angular/material" as mat;
+
+@mixin button-color($color) {
+  @if $color == "primary" {
+    $color: var(--mat-sys-primary);
+  } @else if $color == "secondary" {
+    $color: var(--mat-sys-secondary);
+  } @else if $color == "accent" {
+    $color: var(--mat-sys-tertiary);
+  }
+
+  @include mat.button-overrides(
+    (
+      filled-container-color: $color,
+    )
+  );
+}
+
+.primary {
+  @include button-color("primary");
+}
+
+.secondary {
+  @include button-color("secondary");
+}
+
+.accent {
+  @include button-color("accent");
+}

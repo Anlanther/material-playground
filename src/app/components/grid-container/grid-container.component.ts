@@ -5,13 +5,19 @@ import { map } from 'rxjs';
 import { FILTER_INPUT } from '../../constants/dummy-data/fund-input-dummy';
 import { WorkspaceName } from '../../constants/workspace-name.enum';
 import { WidgetInput } from '../../models/widget-input.model';
+import { ColorShowcaseComponent } from '../color-showcase/color-showcase.component';
 import { FormFilterModule } from '../form-filter/form-filter.module';
 import { SavedFilter } from '../form-filter/models/saved-filter.model';
 import { WorkspaceSelectorComponent } from '../workspace-selector/workspace-selector.component';
 
 @Component({
   selector: 'app-grid-container',
-  imports: [CommonModule, WorkspaceSelectorComponent, FormFilterModule],
+  imports: [
+    CommonModule,
+    WorkspaceSelectorComponent,
+    FormFilterModule,
+    ColorShowcaseComponent,
+  ],
   templateUrl: './grid-container.component.html',
   styleUrl: './grid-container.component.scss',
   standalone: true,

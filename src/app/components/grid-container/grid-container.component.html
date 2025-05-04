@@ -7,6 +7,9 @@
       @case (workspace.Filter) {
         <app-form-filter [widgetInput]="filterState()"></app-form-filter>
       }
+      @case (workspace.Button) {
+        <app-color-showcase></app-color-showcase>
+      }
     }
   }
 </div>
