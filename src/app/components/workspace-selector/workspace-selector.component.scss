@@ -2,19 +2,38 @@
 @use "../../styles/vars" as vars;
 @use "../../styles/mixins" as mixins;
 
-.button-accent {
+@mixin button($theme: "light") {
+  $tertiary-color: if(
+    $theme == "light",
+    vars.$tertiary-color-light,
+    vars.$tertiary-color-dark
+  );
+
   @include mat.button-overrides(
     (
-      filled-container-color: vars.$tertiary-color-light,
-      filled-label-text-color: black,
+      filled-container-color: $tertiary-color,
+      filled-label-text-color: vars.$text-color-black,
       filled-container-height: 36px,
     )
   );
 }
 
-.table-tabs {
+.button-accent-light {
+  @include button("light");
+}
+
+.button-accent-dark {
+  @include button("dark");
+}
+
+.table-tabs-light {
   background-color: vars.$neutral-color-variant-light;
-  @include mixins.single-color-tabs;
+  @include mixins.single-color-tabs("light");
+}
+
+.table-tabs-dark {
+  background-color: vars.$neutral-color-variant-dark;
+  @include mixins.single-color-tabs("dark");
 }
 
 .discovery {

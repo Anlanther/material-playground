@@ -2,14 +2,34 @@
 @use "../../styles/vars" as vars;
 @use "../../styles/mixins" as mixins;
 
-.isInactive {
-  background-color: var(--mat-sys-surface-variant);
+@mixin main-table($theme: "light") {
+  $neutral-variant: if(
+    $theme == "light",
+    vars.$neutral-color-variant-light,
+    vars.$neutral-color-variant-dark
+  );
+
+  background-color: $neutral-variant;
+}
+
+.inactive-light {
+  @include main-table("light");
   border-radius: vars.$border-radius;
 }
 
-.tabs {
+.inactive-dark {
+  @include main-table("dark");
+  border-radius: vars.$border-radius;
+}
+
+.tabs-light {
   margin: 5px 0;
-  @include mixins.single-color-tabs;
+  @include mixins.single-color-tabs("light");
+}
+
+.tabs-dark {
+  margin: 5px 0;
+  @include mixins.single-color-tabs("dark");
 }
 
 .gap {
