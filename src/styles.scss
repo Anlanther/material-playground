@@ -12,8 +12,8 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: my-theme.$primary-palette,
-        tertiary: my-theme.$tertiary-palette,
+        primary: my-theme.$primary-color-light-palette,
+        tertiary: my-theme.$tertiary-color-light-palette,
       ),
       typography: Roboto,
       density: -5,
@@ -30,7 +30,7 @@ html {
 
   @include mat.table-overrides(
     (
-      background-color: white,
+      background-color: vars.$neutral-color-light,
     )
   );
 
@@ -43,7 +43,7 @@ html {
   @include mat.form-field-overrides(
     (
       filled-container-shape: vars.$border-radius,
-      outlined-outline-color: vars.$neutral-variant,
+      outlined-outline-color: vars.$neutral-color-variant-light,
     )
   );
 }

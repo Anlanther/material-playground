@@ -1,10 +1,11 @@
 @use "@angular/material" as mat;
 @use "../../styles/vars" as vars;
+@use "../../styles/mixins" as mixins;
 
 .button-accent {
   @include mat.button-overrides(
     (
-      filled-container-color: vars.$tertiary,
+      filled-container-color: vars.$tertiary-color-light,
       filled-label-text-color: black,
       filled-container-height: 36px,
     )
@@ -12,16 +13,8 @@
 }
 
 .table-tabs {
-  background-color: vars.$neutral-variant;
-  @include mat.tabs-overrides(
-    (
-      active-indicator-height: 100vh,
-      active-indicator-color: white,
-      active-focus-indicator-color: white,
-      divider-height: 0,
-      active-hover-indicator-color: white,
-    )
-  );
+  background-color: vars.$neutral-color-variant-light;
+  @include mixins.single-color-tabs;
 }
 
 .discovery {

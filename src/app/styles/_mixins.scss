@@ -1,0 +1,14 @@
+@use "@angular/material" as mat;
+@use "./vars" as vars;
+
+@mixin single-color-tabs {
+  @include mat.tabs-overrides(
+    (
+      divider-height: 0,
+      active-indicator-height: 100vh,
+      active-indicator-color: vars.$neutral-color-light,
+      active-focus-indicator-color: vars.$neutral-color-light,
+      active-hover-indicator-color: vars.$neutral-color-light,
+    )
+  );
+}

@@ -1,5 +1,6 @@
 @use "@angular/material" as mat;
 @use "../../styles/vars" as vars;
+@use "../../styles/mixins" as mixins;
 
 .isInactive {
   background-color: var(--mat-sys-surface-variant);
@@ -8,16 +9,7 @@
 
 .tabs {
   margin: 5px 0;
-
-  @include mat.tabs-overrides(
-    (
-      divider-height: 0,
-      active-indicator-height: 100vh,
-      active-indicator-color: white,
-      active-focus-indicator-color: white,
-      active-hover-indicator-color: white,
-    )
-  );
+  @include mixins.single-color-tabs;
 }
 
 .gap {
