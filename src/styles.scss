@@ -1,6 +1,8 @@
 @use "@angular/material" as mat;
 @use "./app/styles/theme-colors" as my-theme;
 @use "./app/styles/vars" as vars;
+@use "./app/styles/mixins" as mixins;
+@use "./app/styles/dark-theme-colors" as my-dark-theme;
 
 body {
   margin: 0;
@@ -21,29 +23,27 @@ html {
   );
 }
 
+html.dark-theme {
+  color-scheme: dark;
+  background: vars.$secondary-color-dark;
+  color: vars.$neutral-color-dark;
+
+  @include mat.theme(
+    (
+      color: (
+        primary: my-dark-theme.$primary-palette,
+        tertiary: my-dark-theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: -5,
+    )
+  );
+}
+
 :root {
-  @include mat.button-overrides(
-    (
-      filled-container-shape: vars.$border-radius,
-    )
-  );
+  @include mixins.component-overrides("light");
+}
 
-  @include mat.table-overrides(
-    (
-      background-color: vars.$neutral-color-light,
-    )
-  );
-
-  @include mat.table-overrides(
-    (
-      row-item-outline-width: 0,
-    )
-  );
-
-  @include mat.form-field-overrides(
-    (
-      filled-container-shape: vars.$border-radius,
-      outlined-outline-color: vars.$neutral-color-variant-light,
-    )
-  );
+.dark-theme {
+  @include mixins.component-overrides("dark");
 }

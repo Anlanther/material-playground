@@ -3,7 +3,8 @@
   focusOnNavigation
   mat-stretch-tabs="false"
   [tabPanel]="panel"
-  class="tabs"
+  [class.tabs-light]="!(isDarkTheme$ | async)"
+  [class.tabs-dark]="isDarkTheme$ | async"
 >
   @for (workspace of workspaces; track workspace) {
     <a
@@ -12,7 +13,8 @@
       routerLinkActive
       #rla="routerLinkActive"
       [active]="rla.isActive"
-      [class.isInactive]="!rla.isActive"
+      [class.inactive-light]="!rla.isActive && !(isDarkTheme$ | async)"
+      [class.inactive-dark]="!rla.isActive && (isDarkTheme$ | async)"
     >
       {{ workspace }}
     </a>

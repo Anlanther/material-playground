@@ -1,14 +1,59 @@
 @use "@angular/material" as mat;
 @use "./vars" as vars;
 
-@mixin single-color-tabs {
+@mixin single-color-tabs($theme: "light") {
+  $neutral-color: if(
+    $theme == "light",
+    vars.$neutral-color-light,
+    vars.$neutral-color-dark
+  );
+  $neutral-variant: if(
+    $theme == "light",
+    vars.$neutral-color-variant-light,
+    vars.$neutral-color-variant-dark
+  );
+
   @include mat.tabs-overrides(
     (
-      divider-height: 0,
+      background-color: $neutral-variant,
       active-indicator-height: 100vh,
-      active-indicator-color: vars.$neutral-color-light,
-      active-focus-indicator-color: vars.$neutral-color-light,
-      active-hover-indicator-color: vars.$neutral-color-light,
+      active-indicator-color: $neutral-color,
+      active-focus-indicator-color: $neutral-color,
+      active-hover-indicator-color: $neutral-color,
+      divider-height: 0,
+    )
+  );
+}
+
+@mixin component-overrides($theme: "light") {
+  $neutral-color: if(
+    $theme == "light",
+    vars.$neutral-color-light,
+    vars.$neutral-color-dark
+  );
+  $neutral-variant: if(
+    $theme == "light",
+    vars.$neutral-color-variant-light,
+    vars.$neutral-color-variant-dark
+  );
+
+  @include mat.button-overrides(
+    (
+      filled-container-shape: vars.$border-radius,
+    )
+  );
+
+  @include mat.table-overrides(
+    (
+      background-color: $neutral-color,
+      row-item-outline-width: 0,
+    )
+  );
+
+  @include mat.form-field-overrides(
+    (
+      filled-container-shape: vars.$border-radius,
+      outlined-outline-color: $neutral-variant,
     )
   );
 }

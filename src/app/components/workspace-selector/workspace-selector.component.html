@@ -6,13 +6,22 @@
     <button
       mat-flat-button
       (click)="toggleTheme()"
-      class="actions button-accent"
+      class="actions"
+      [class.button-accent-light]="!(isDarkTheme$ | async)"
+      [class.button-accent-dark]="isDarkTheme$ | async"
     >
-      Accent Button
+      <mat-icon>
+        {{ (isDarkTheme$ | async) ? "light_mode" : "dark_mode" }}
+      </mat-icon>
+      {{ (isDarkTheme$ | async) ? "Light Theme" : "Dark Theme" }}
     </button>
   </div>
 
-  <mat-tab-group class="table-tabs">
+  <mat-tab-group
+    [class.table-tabs-light]="!(isDarkTheme$ | async)"
+    [class.table-tabs-dark]="isDarkTheme$ | async"
+    class="table-tabs"
+  >
     <mat-tab label="First"><app-discovery-table></app-discovery-table></mat-tab>
     <mat-tab label="Second">
       <app-discovery-table></app-discovery-table>
