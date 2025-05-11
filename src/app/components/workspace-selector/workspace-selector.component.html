@@ -17,7 +17,7 @@
     </button>
   </div>
 
-  <mat-tab-group
+  <!-- <mat-tab-group
     [class.table-tabs-light]="!(isDarkTheme$ | async)"
     [class.table-tabs-dark]="isDarkTheme$ | async"
     class="table-tabs"
@@ -27,5 +27,17 @@
       <app-discovery-table></app-discovery-table>
     </mat-tab>
     <mat-tab label="Third"><app-discovery-table></app-discovery-table></mat-tab>
+  </mat-tab-group> -->
+  <mat-tab-group
+    backgroundColor="primary"
+    [class.table-tabs-light]="!(isDarkTheme$ | async)"
+    [class.table-tabs-dark]="isDarkTheme$ | async"
+    class="table-tabs"
+  >
+    <mat-tab label="First"><app-tab-showcase></app-tab-showcase></mat-tab>
+    <mat-tab label="Second">
+      <app-tab-showcase></app-tab-showcase>
+    </mat-tab>
+    <mat-tab label="Third"><app-tab-showcase></app-tab-showcase></mat-tab>
   </mat-tab-group>
 </div>

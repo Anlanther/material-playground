@@ -27,13 +27,23 @@
 }
 
 .table-tabs-light {
-  background-color: vars.$neutral-color-variant-light;
-  @include mixins.single-color-tabs("light");
+  // background-color: vars.$neutral-color-variant-light;
+  // @include mixins.single-color-tabs("light");
+  @include mat.tabs-overrides(
+    (
+      background-color: vars.$neutral-color-variant-light,
+      // active-indicator-height: 100vh,
+      // active-indicator-color: $neutral-color,
+      // active-focus-indicator-color: $neutral-color,
+      // active-hover-indicator-color: $neutral-color,
+       // divider-height: 0,
+    )
+  );
 }
 
 .table-tabs-dark {
-  background-color: vars.$neutral-color-variant-dark;
-  @include mixins.single-color-tabs("dark");
+  // background-color: vars.$neutral-color-variant-dark;
+  // @include mixins.single-color-tabs("dark");
 }
 
 .discovery {
