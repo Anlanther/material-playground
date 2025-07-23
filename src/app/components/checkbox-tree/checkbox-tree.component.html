@@ -1,0 +1,109 @@
+<div class="checkbox-tree-container">
+  <!-- Search Filter -->
+  <div class="search-section" *ngIf="showSearchFilter">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search tree...</mat-label>
+      <input matInput [formControl]="searchControl" placeholder="Type to filter nodes">
+      <mat-icon matSuffix>search</mat-icon>
+      <button 
+        mat-icon-button 
+        matSuffix 
+        *ngIf="searchControl.value" 
+        (click)="clearSearch()"
+        aria-label="Clear search">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Tree Section -->
+  <div class="tree-section">
+    <div class="tree-header">
+      <h3>Select Items</h3>
+      <button 
+        mat-button 
+        color="warn" 
+        (click)="clearAllSelections()"
+        [disabled]="getSelectedCount() === 0">
+        Clear All
+      </button>
+    </div>
+
+    <div class="tree-container" [style.max-height]="maxChildHeight">
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" [trackBy]="trackByNodeId">
+        <!-- Leaf node -->
+        <mat-tree-node 
+          *matTreeNodeDef="let node" 
+          matTreeNodePadding
+          [style.padding-left]="getNodePadding(node.level)"
+          class="tree-node">
+          
+          <div class="node-content">
+            <div class="node-spacer"></div>
+            
+            <mat-checkbox 
+              [checked]="getCheckboxState(node).checked"
+              [indeterminate]="getCheckboxState(node).indeterminate"
+              (change)="toggleNodeSelection(node)"
+              class="node-checkbox">
+              {{ node.name }}
+            </mat-checkbox>
+          </div>
+        </mat-tree-node>
+
+        <!-- Branch node -->
+        <mat-tree-node 
+          *matTreeNodeDef="let node; when: hasChild" 
+          matTreeNodePadding
+          [style.padding-left]="getNodePadding(node.level)"
+          class="tree-node expandable-node">
+          
+          <div class="node-content">
+            <button 
+              mat-icon-button 
+              matTreeNodeToggle
+              tabindex="-1"
+              class="expand-button"
+              [attr.aria-label]="'Toggle ' + node.name">
+              <mat-icon>
+                {{ treeControl.isExpanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}
+              </mat-icon>
+            </button>
+            
+            <mat-checkbox 
+              [checked]="getCheckboxState(node).checked"
+              [indeterminate]="getCheckboxState(node).indeterminate"
+              (change)="toggleNodeSelection(node)"
+              class="node-checkbox">
+              {{ node.name }}
+            </mat-checkbox>
+          </div>
+        </mat-tree-node>
+      </mat-tree>
+    </div>
+  </div>
+
+  <!-- Selected Items Section -->
+  <div class="selected-section" *ngIf="showSelectedItems">
+    <div class="selected-header">
+      <h3>Selected Items ({{ getSelectedCount() }})</h3>
+    </div>
+    
+    <div class="selected-container" [style.max-height]="maxChildHeight">
+      <div class="selected-items" *ngIf="selectedNodes.length > 0; else noSelection">
+        <mat-chip-set>
+          <mat-chip *ngFor="let item of selectedNodes; let i = index; trackBy: trackBySelectedItem">
+            {{ item }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+      
+      <ng-template #noSelection>
+        <div class="no-selection">
+          <mat-icon>info</mat-icon>
+          <span>No items selected</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

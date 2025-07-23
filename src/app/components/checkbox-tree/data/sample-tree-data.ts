@@ -1,0 +1,179 @@
+import { TreeNode } from '../models/tree-node.interface';
+
+export const SAMPLE_TREE_DATA: TreeNode[] = [
+  {
+    id: 'electronics',
+    name: 'Electronics',
+    children: [
+      {
+        id: 'phones',
+        name: 'Phones',
+        children: [
+          {
+            id: 'android',
+            name: 'Android',
+            children: [
+              {
+                id: 'samsung',
+                name: 'Samsung',
+                children: [
+                  { id: 'samsung-s8', name: 'S8' },
+                  { id: 'samsung-s9', name: 'S9' },
+                  { id: 'samsung-s10', name: 'S10' },
+                  { id: 'samsung-s20', name: 'S20' },
+                  { id: 'samsung-s21', name: 'S21' },
+                  { id: 'samsung-s22', name: 'S22' },
+                  { id: 'samsung-s23', name: 'S23' },
+                  { id: 'samsung-s24', name: 'S24' },
+                  { id: 'samsung-note8', name: 'Note 8' },
+                  { id: 'samsung-note9', name: 'Note 9' },
+                  { id: 'samsung-note10', name: 'Note 10' },
+                  { id: 'samsung-note20', name: 'Note 20' },
+                  { id: 'samsung-a50', name: 'A50' },
+                  { id: 'samsung-a51', name: 'A51' },
+                  { id: 'samsung-a52', name: 'A52' }
+                ]
+              },
+              {
+                id: 'google',
+                name: 'Google',
+                children: [
+                  { id: 'google-pixel1', name: 'Pixel 1' },
+                  { id: 'google-pixel2', name: 'Pixel 2' },
+                  { id: 'google-pixel3', name: 'Pixel 3' },
+                  { id: 'google-pixel4', name: 'Pixel 4' },
+                  { id: 'google-pixel5', name: 'Pixel 5' },
+                  { id: 'google-pixel6', name: 'Pixel 6' },
+                  { id: 'google-pixel7', name: 'Pixel 7' },
+                  { id: 'google-pixel8', name: 'Pixel 8' },
+                  { id: 'google-pixel8pro', name: 'Pixel 8 Pro' },
+                  { id: 'google-pixel8a', name: 'Pixel 8a' },
+                  { id: 'google-pixel7a', name: 'Pixel 7a' },
+                  { id: 'google-pixel6a', name: 'Pixel 6a' }
+                ]
+              },
+              {
+                id: 'oneplus',
+                name: 'OnePlus',
+                children: [
+                  { id: 'oneplus-6', name: '6' },
+                  { id: 'oneplus-6t', name: '6T' },
+                  { id: 'oneplus-7', name: '7' },
+                  { id: 'oneplus-7t', name: '7T' },
+                  { id: 'oneplus-8', name: '8' },
+                  { id: 'oneplus-8t', name: '8T' },
+                  { id: 'oneplus-9', name: '9' },
+                  { id: 'oneplus-9pro', name: '9 Pro' },
+                  { id: 'oneplus-10', name: '10' },
+                  { id: 'oneplus-10pro', name: '10 Pro' },
+                  { id: 'oneplus-11', name: '11' },
+                  { id: 'oneplus-12', name: '12' }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'ios',
+            name: 'iOS',
+            children: [
+              {
+                id: 'iphone',
+                name: 'iPhone',
+                children: [
+                  { id: 'iphone-8', name: '8' },
+                  { id: 'iphone-x', name: 'X' },
+                  { id: 'iphone-xr', name: 'XR' },
+                  { id: 'iphone-xs', name: 'XS' },
+                  { id: 'iphone-11', name: '11' },
+                  { id: 'iphone-11pro', name: '11 Pro' },
+                  { id: 'iphone-12', name: '12' },
+                  { id: 'iphone-12pro', name: '12 Pro' },
+                  { id: 'iphone-13', name: '13' },
+                  { id: 'iphone-13pro', name: '13 Pro' },
+                  { id: 'iphone-14', name: '14' },
+                  { id: 'iphone-14pro', name: '14 Pro' },
+                  { id: 'iphone-15', name: '15' },
+                  { id: 'iphone-15pro', name: '15 Pro' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'laptops',
+        name: 'Laptops',
+        children: [
+          {
+            id: 'apple-laptops',
+            name: 'Apple',
+            children: [
+              { id: 'macbook-air', name: 'MacBook Air' },
+              { id: 'macbook-pro13', name: 'MacBook Pro 13' },
+              { id: 'macbook-pro14', name: 'MacBook Pro 14' },
+              { id: 'macbook-pro16', name: 'MacBook Pro 16' },
+              { id: 'macbook-12', name: 'MacBook 12' },
+              { id: 'macbook-retina', name: 'MacBook Retina' },
+              { id: 'macbook-pro2015', name: 'MacBook Pro 2015' },
+              { id: 'macbook-pro2016', name: 'MacBook Pro 2016' },
+              { id: 'macbook-pro2017', name: 'MacBook Pro 2017' },
+              { id: 'macbook-pro2018', name: 'MacBook Pro 2018' },
+              { id: 'macbook-pro2019', name: 'MacBook Pro 2019' },
+              { id: 'macbook-pro2020', name: 'MacBook Pro 2020' }
+            ]
+          },
+          {
+            id: 'dell-laptops',
+            name: 'Dell',
+            children: [
+              { id: 'dell-xps13', name: 'XPS 13' },
+              { id: 'dell-xps15', name: 'XPS 15' },
+              { id: 'dell-xps17', name: 'XPS 17' },
+              { id: 'dell-inspiron13', name: 'Inspiron 13' },
+              { id: 'dell-inspiron15', name: 'Inspiron 15' },
+              { id: 'dell-inspiron17', name: 'Inspiron 17' },
+              { id: 'dell-latitude5400', name: 'Latitude 5400' },
+              { id: 'dell-latitude7400', name: 'Latitude 7400' },
+              { id: 'dell-precision5550', name: 'Precision 5550' },
+              { id: 'dell-precision7550', name: 'Precision 7550' },
+              { id: 'dell-alienware-m15', name: 'Alienware m15' },
+              { id: 'dell-alienware-m17', name: 'Alienware m17' }
+            ]
+          },
+          {
+            id: 'lenovo-laptops',
+            name: 'Lenovo',
+            children: [
+              { id: 'lenovo-thinkpad-x1carbon', name: 'ThinkPad X1 Carbon' },
+              { id: 'lenovo-thinkpad-t14', name: 'ThinkPad T14' },
+              { id: 'lenovo-thinkpad-t15', name: 'ThinkPad T15' },
+              { id: 'lenovo-thinkpad-p1', name: 'ThinkPad P1' },
+              { id: 'lenovo-thinkpad-l14', name: 'ThinkPad L14' },
+              { id: 'lenovo-thinkpad-e14', name: 'ThinkPad E14' },
+              { id: 'lenovo-yoga-7i', name: 'Yoga 7i' },
+              { id: 'lenovo-yoga-9i', name: 'Yoga 9i' },
+              { id: 'lenovo-legion-5', name: 'Legion 5' },
+              { id: 'lenovo-legion-7', name: 'Legion 7' },
+              { id: 'lenovo-ideapad-3', name: 'IdeaPad 3' },
+              { id: 'lenovo-ideapad-5', name: 'IdeaPad 5' }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'furniture',
+    name: 'Furniture',
+    children: [
+      {
+        id: 'chairs',
+        name: 'Chairs',
+        children: [
+          { id: 'office-chairs', name: 'Office' },
+          { id: 'living-room-chairs', name: 'Living Room' }
+        ]
+      }
+    ]
+  }
+];
