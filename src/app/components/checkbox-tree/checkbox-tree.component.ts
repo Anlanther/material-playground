@@ -34,12 +34,14 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   filteredNodes: TreeNode[] = [];
   expandedNodes = new Set<string>();
   originalExpandedNodes = new Set<string>(); // Store original expansion state
+  currentTreeData: TreeNode[] = []; // Current tree data (filtered or original)
 
   private destroy$ = new Subject<void>();
   constructor(private checkboxTreeService: CheckboxTreeService) {}
 
   ngOnInit(): void {
     // Initialize tree data
+    this.currentTreeData = this.treeData;
     this.flattenedNodes = this.flattenTree(this.treeData);
     this.filteredNodes = [...this.flattenedNodes];
 
@@ -105,6 +107,7 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
     if (!searchTerm.trim()) {
       // Restore original expansion state and show all data
       this.expandedNodes = new Set(this.originalExpandedNodes);
+      this.currentTreeData = this.treeData;
       this.refreshTree();
       return;
     }
@@ -121,16 +124,16 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
     this.expandedNodes.clear();
 
     // Filter and show matching nodes with their parents
-    const filteredData = this.filterTreeData(
+    this.currentTreeData = this.filterTreeData(
       this.treeData,
       searchTerm.toLowerCase(),
     );
 
     // Only expand nodes that have matching children or are matches themselves
-    this.autoExpandForSearch(filteredData, searchTerm.toLowerCase());
+    this.autoExpandForSearch(this.currentTreeData, searchTerm.toLowerCase());
 
     // Flatten the filtered data
-    this.filteredNodes = this.flattenTree(filteredData);
+    this.filteredNodes = this.flattenTree(this.currentTreeData);
   }
 
   /**
@@ -203,6 +206,37 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get child nodes for a given parent node from the original tree data
+   */
+  getChildNodes(parentNode: TreeNode): TreeNode[] {
+    if (!parentNode.children) {
+      return [];
+    }
+
+    // Return the children from the original tree data, mapped with flattened properties
+    return parentNode.children.map((child) => ({
+      ...child,
+      level: (parentNode.level || 0) + 1,
+      expandable: !!(child.children && child.children.length > 0),
+      isExpanded: this.expandedNodes.has(child.id),
+      isVisible: true,
+    }));
+  }
+
+  /**
+   * Get only top-level nodes from current tree data
+   */
+  getTopLevelNodes(): TreeNode[] {
+    return this.currentTreeData.map((node) => ({
+      ...node,
+      level: 0,
+      expandable: !!(node.children && node.children.length > 0),
+      isExpanded: this.expandedNodes.has(node.id),
+      isVisible: true,
+    }));
+  }
+
+  /**
    * Check if node is expanded
    */
   isExpanded(node: TreeNode): boolean {
@@ -227,7 +261,7 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    * Refresh the tree display
    */
   private refreshTree(): void {
-    this.flattenedNodes = this.flattenTree(this.treeData);
+    this.flattenedNodes = this.flattenTree(this.currentTreeData);
     if (this.searchControl.value) {
       this.filterTree(this.searchControl.value);
     } else {
@@ -275,7 +309,21 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    */
   getNodePadding(node: TreeNode): string {
     const level = node.level || 0;
-    return `${level * 20 + 10}px`;
+
+    // Top-level nodes (level 0) get minimal padding
+    if (level === 0) {
+      return '10px';
+    }
+
+    // First child level (level 1) gets base padding since they're in a scroll container
+    if (level === 1) {
+      return '10px';
+    }
+
+    // Deeper levels (2+) get progressive indentation within the scroll container
+    // Subtract 1 from level since level 1 is the base level in the scroll container
+    const indentLevel = level - 1;
+    return `${indentLevel * 20 + 10}px`;
   }
 
   /**

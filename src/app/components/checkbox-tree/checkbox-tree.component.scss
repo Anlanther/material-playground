@@ -36,9 +36,18 @@
 
   .tree-container {
     overflow-y: auto;
+    overflow-x: hidden; // Prevent horizontal scrolling
     border: 1px solid var(--mat-divider-color, #e0e0e0);
     border-radius: 4px;
     background: var(--mat-card-background-color, #fff);
+    max-height: 50vh; // Updated to 50vh as requested
+    width: 100%; // Ensure full width
+    box-sizing: border-box; // Include padding and borders
+
+    .tree-list {
+      width: 100%;
+      box-sizing: border-box;
+    }
 
     // Custom scrollbar styling
     &::-webkit-scrollbar {
@@ -65,9 +74,11 @@
 .tree-node {
   min-height: 48px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   border-bottom: 1px solid var(--mat-divider-color, rgba(0, 0, 0, 0.04));
   transition: background-color 0.2s ease;
+  width: 100%; // Ensure full width
+  box-sizing: border-box; // Include padding and borders in width calculation
 
   &:hover {
     background-color: var(
@@ -86,6 +97,10 @@
     width: 100%;
     gap: 0.5rem;
     padding-left: 10px;
+    padding-right: 10px; // Add right padding
+    min-height: 48px;
+    box-sizing: border-box; // Include padding in width calculation
+    overflow: hidden; // Prevent content overflow
   }
 
   .node-spacer {
@@ -108,6 +123,8 @@
 
   .node-checkbox {
     flex: 1;
+    min-width: 0; // Allow shrinking and prevent overflow
+    overflow: hidden; // Prevent text overflow
 
     .mdc-checkbox {
       padding: 8px;
@@ -115,15 +132,75 @@
 
     .mdc-form-field {
       align-items: center;
+      overflow: hidden; // Prevent label overflow
     }
 
     .mdc-form-field > label {
       color: var(--mat-text-primary-on-background, #212121);
       font-size: 0.875rem;
       line-height: 1.25rem;
+      overflow: hidden; // Prevent text overflow
+      text-overflow: ellipsis; // Add ellipsis for long text
+      white-space: nowrap; // Prevent wrapping that could cause issues
     }
   }
 }
+
+// Child nodes container with scrolling (ONLY for first child level)
+.child-nodes-container {
+  width: 100%;
+  overflow: hidden; // Prevent any overflow issues
+
+  .child-nodes-scroll {
+    max-height: 30vh; // 30vh height limit for first child level only
+    overflow-y: auto;
+    overflow-x: hidden; // Prevent horizontal scrolling
+    border-left: 2px solid var(--mat-divider-color, #e0e0e0);
+    margin-left: 1rem;
+    background-color: var(--mat-app-surface-variant, #f8f9fa);
+    min-width: 0; // Prevent flex children from overflowing
+
+    // Custom scrollbar styling for child containers
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+
+      &:hover {
+        background: #a8a8a8;
+      }
+    }
+  }
+}
+
+// Top level node styling
+.top-level-node {
+  border-bottom: 2px solid var(--mat-divider-color, #e0e0e0);
+
+  .node-content {
+    background-color: var(--mat-app-surface, #ffffff);
+    font-weight: 500;
+  }
+}
+
+// Child node styling (applies to all non-top-level nodes)
+.child-node {
+  border-bottom: 1px solid var(--mat-divider-color, rgba(0, 0, 0, 0.04));
+
+  .node-content {
+    background-color: transparent;
+  }
+}
+
+// Nested node styling - removed as we now use dynamic classes
 
 .expandable-node {
   .node-content {

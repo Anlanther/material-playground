@@ -35,48 +35,96 @@
       </button>
     </div>
 
-    <div class="tree-container" [style.max-height]="maxChildHeight">
+    <div class="tree-container">
       <div class="tree-list">
-        <div
-          *ngFor="let node of filteredNodes; trackBy: trackByNodeId"
-          class="tree-node"
-          [style.padding-left]="getNodePadding(node)"
+        <ng-container
+          *ngFor="let node of getTopLevelNodes(); trackBy: trackByNodeId"
         >
-          <div class="node-content">
-            <!-- Expand/Collapse button for nodes with children -->
-            <button
-              *ngIf="hasChild(node)"
-              mat-icon-button
-              (click)="toggleExpansion(node)"
-              class="expand-button"
-              [attr.aria-label]="'Toggle ' + node.name"
-            >
-              <mat-icon>
-                {{
-                  isExpanded(node)
-                    ? "keyboard_arrow_down"
-                    : "keyboard_arrow_right"
-                }}
-              </mat-icon>
-            </button>
-
-            <!-- Spacer for leaf nodes -->
-            <div *ngIf="!hasChild(node)" class="node-spacer"></div>
-
-            <!-- Checkbox -->
-            <mat-checkbox
-              [checked]="getCheckboxState(node).checked"
-              [indeterminate]="getCheckboxState(node).indeterminate"
-              (change)="toggleNodeSelection(node)"
-              class="node-checkbox"
-            >
-              {{ node.name }}
-            </mat-checkbox>
-          </div>
-        </div>
+          <ng-container
+            *ngTemplateOutlet="
+              treeNodeTemplate;
+              context: { $implicit: node, level: 0 }
+            "
+          ></ng-container>
+        </ng-container>
       </div>
     </div>
   </div>
+
+  <!-- Recursive Tree Node Template -->
+  <ng-template #treeNodeTemplate let-node let-level="level">
+    <div
+      class="tree-node"
+      [class.top-level-node]="level === 0"
+      [class.child-node]="level > 0"
+    >
+      <div class="node-content" [style.padding-left]="getNodePadding(node)">
+        <!-- Expand/Collapse button for nodes with children -->
+        <button
+          *ngIf="hasChild(node)"
+          mat-icon-button
+          (click)="toggleExpansion(node)"
+          class="expand-button"
+          [attr.aria-label]="'Toggle ' + node.name"
+        >
+          <mat-icon>
+            {{
+              isExpanded(node) ? "keyboard_arrow_down" : "keyboard_arrow_right"
+            }}
+          </mat-icon>
+        </button>
+
+        <!-- Spacer for leaf nodes -->
+        <div *ngIf="!hasChild(node)" class="node-spacer"></div>
+
+        <!-- Checkbox -->
+        <mat-checkbox
+          [checked]="getCheckboxState(node).checked"
+          [indeterminate]="getCheckboxState(node).indeterminate"
+          (change)="toggleNodeSelection(node)"
+          class="node-checkbox"
+        >
+          {{ node.name }}
+        </mat-checkbox>
+      </div>
+
+      <!-- Child nodes container with scroll (ONLY for level 0 -> level 1) -->
+      <div
+        *ngIf="hasChild(node) && isExpanded(node) && level === 0"
+        class="child-nodes-container"
+      >
+        <div class="child-nodes-scroll">
+          <ng-container
+            *ngFor="
+              let childNode of getChildNodes(node);
+              trackBy: trackByNodeId
+            "
+          >
+            <ng-container
+              *ngTemplateOutlet="
+                treeNodeTemplate;
+                context: { $implicit: childNode, level: level + 1 }
+              "
+            ></ng-container>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Child nodes without scroll container (for all other levels) -->
+      <div *ngIf="hasChild(node) && isExpanded(node) && level > 0">
+        <ng-container
+          *ngFor="let childNode of getChildNodes(node); trackBy: trackByNodeId"
+        >
+          <ng-container
+            *ngTemplateOutlet="
+              treeNodeTemplate;
+              context: { $implicit: childNode, level: level + 1 }
+            "
+          ></ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-template>
 
   <!-- Selected Items Section -->
   <div class="selected-section" *ngIf="showSelectedItems">
