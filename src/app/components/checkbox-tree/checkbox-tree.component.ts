@@ -33,9 +33,9 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   flattenedNodes: TreeNode[] = [];
   filteredNodes: TreeNode[] = [];
   expandedNodes = new Set<string>();
+  originalExpandedNodes = new Set<string>(); // Store original expansion state
 
   private destroy$ = new Subject<void>();
-
   constructor(private checkboxTreeService: CheckboxTreeService) {}
 
   ngOnInit(): void {
@@ -103,55 +103,96 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    */
   private filterTree(searchTerm: string): void {
     if (!searchTerm.trim()) {
-      // Show all data
-      this.filteredNodes = [...this.flattenedNodes];
+      // Restore original expansion state and show all data
+      this.expandedNodes = new Set(this.originalExpandedNodes);
+      this.refreshTree();
       return;
     }
+
+    // Store current expansion state if we're starting a new search
+    if (
+      !this.searchControl.value ||
+      this.searchControl.value.length <= searchTerm.length
+    ) {
+      this.originalExpandedNodes = new Set(this.expandedNodes);
+    }
+
+    // Clear expansion for search
+    this.expandedNodes.clear();
 
     // Filter and show matching nodes with their parents
     const filteredData = this.filterTreeData(
       this.treeData,
       searchTerm.toLowerCase(),
     );
-    this.filteredNodes = this.flattenTree(filteredData);
 
-    // Expand all nodes when searching
-    filteredData.forEach((node) => this.expandAllInBranch(node));
+    // Only expand nodes that have matching children or are matches themselves
+    this.autoExpandForSearch(filteredData, searchTerm.toLowerCase());
+
+    // Flatten the filtered data
     this.filteredNodes = this.flattenTree(filteredData);
   }
 
   /**
-   * Expand all nodes in a branch
+   * Auto-expand only nodes that contain matches or have matching children
    */
-  private expandAllInBranch(node: TreeNode): void {
-    if (node.children && node.children.length > 0) {
-      this.expandedNodes.add(node.id);
-      node.children.forEach((child) => this.expandAllInBranch(child));
-    }
+  private autoExpandForSearch(nodes: TreeNode[], searchTerm: string): void {
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        // Check if this node or any of its children match
+        const hasMatchingDescendants = this.hasMatchingDescendants(
+          node,
+          searchTerm,
+        );
+
+        if (hasMatchingDescendants) {
+          this.expandedNodes.add(node.id);
+          this.autoExpandForSearch(node.children, searchTerm);
+        }
+      }
+    });
   }
 
   /**
-   * Recursively filter tree data
+   * Check if a node has any descendants that match the search term
+   */
+  private hasMatchingDescendants(node: TreeNode, searchTerm: string): boolean {
+    if (node.name.toLowerCase().includes(searchTerm)) {
+      return true;
+    }
+
+    if (node.children) {
+      return node.children.some((child) =>
+        this.hasMatchingDescendants(child, searchTerm),
+      );
+    }
+
+    return false;
+  }
+
+  /**
+   * Recursively filter tree data to only include matching nodes and their parents
    */
   private filterTreeData(nodes: TreeNode[], searchTerm: string): TreeNode[] {
-    return nodes.filter((node) => {
-      const matchesName = node.name.toLowerCase().includes(searchTerm);
-      const hasMatchingChildren = node.children
-        ? this.filterTreeData(node.children, searchTerm).length > 0
-        : false;
+    return nodes.reduce((filtered: TreeNode[], node: TreeNode) => {
+      // Check if current node matches the search term
+      const isMatch = node.name.toLowerCase().includes(searchTerm);
 
-      if (matchesName || hasMatchingChildren) {
-        if (node.children && hasMatchingChildren) {
-          // Return node with filtered children
-          return {
-            ...node,
-            children: this.filterTreeData(node.children, searchTerm),
-          };
-        }
-        return node;
+      // Check if any children match (recursively)
+      const filteredChildren = node.children
+        ? this.filterTreeData(node.children, searchTerm)
+        : [];
+
+      // Include node if it matches or has matching children
+      if (isMatch || filteredChildren.length > 0) {
+        filtered.push({
+          ...node,
+          children: filteredChildren,
+        });
       }
-      return false;
-    }) as TreeNode[];
+
+      return filtered;
+    }, []);
   }
 
   /**
