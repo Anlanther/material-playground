@@ -31,8 +31,8 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
                   { id: 'samsung-note20', name: 'Note 20' },
                   { id: 'samsung-a50', name: 'A50' },
                   { id: 'samsung-a51', name: 'A51' },
-                  { id: 'samsung-a52', name: 'A52' }
-                ]
+                  { id: 'samsung-a52', name: 'A52' },
+                ],
               },
               {
                 id: 'google',
@@ -49,8 +49,8 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
                   { id: 'google-pixel8pro', name: 'Pixel 8 Pro' },
                   { id: 'google-pixel8a', name: 'Pixel 8a' },
                   { id: 'google-pixel7a', name: 'Pixel 7a' },
-                  { id: 'google-pixel6a', name: 'Pixel 6a' }
-                ]
+                  { id: 'google-pixel6a', name: 'Pixel 6a' },
+                ],
               },
               {
                 id: 'oneplus',
@@ -67,10 +67,10 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
                   { id: 'oneplus-10', name: '10' },
                   { id: 'oneplus-10pro', name: '10 Pro' },
                   { id: 'oneplus-11', name: '11' },
-                  { id: 'oneplus-12', name: '12' }
-                ]
-              }
-            ]
+                  { id: 'oneplus-12', name: '12' },
+                ],
+              },
+            ],
           },
           {
             id: 'ios',
@@ -93,12 +93,12 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
                   { id: 'iphone-14', name: '14' },
                   { id: 'iphone-14pro', name: '14 Pro' },
                   { id: 'iphone-15', name: '15' },
-                  { id: 'iphone-15pro', name: '15 Pro' }
-                ]
-              }
-            ]
-          }
-        ]
+                  { id: 'iphone-15pro', name: '15 Pro' },
+                ],
+              },
+            ],
+          },
+        ],
       },
       {
         id: 'laptops',
@@ -119,8 +119,8 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
               { id: 'macbook-pro2017', name: 'MacBook Pro 2017' },
               { id: 'macbook-pro2018', name: 'MacBook Pro 2018' },
               { id: 'macbook-pro2019', name: 'MacBook Pro 2019' },
-              { id: 'macbook-pro2020', name: 'MacBook Pro 2020' }
-            ]
+              { id: 'macbook-pro2020', name: 'MacBook Pro 2020' },
+            ],
           },
           {
             id: 'dell-laptops',
@@ -137,8 +137,8 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
               { id: 'dell-precision5550', name: 'Precision 5550' },
               { id: 'dell-precision7550', name: 'Precision 7550' },
               { id: 'dell-alienware-m15', name: 'Alienware m15' },
-              { id: 'dell-alienware-m17', name: 'Alienware m17' }
-            ]
+              { id: 'dell-alienware-m17', name: 'Alienware m17' },
+            ],
           },
           {
             id: 'lenovo-laptops',
@@ -155,12 +155,12 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
               { id: 'lenovo-legion-5', name: 'Legion 5' },
               { id: 'lenovo-legion-7', name: 'Legion 7' },
               { id: 'lenovo-ideapad-3', name: 'IdeaPad 3' },
-              { id: 'lenovo-ideapad-5', name: 'IdeaPad 5' }
-            ]
-          }
-        ]
-      }
-    ]
+              { id: 'lenovo-ideapad-5', name: 'IdeaPad 5' },
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     id: 'furniture',
@@ -171,9 +171,9 @@ export const SAMPLE_TREE_DATA: TreeNode[] = [
         name: 'Chairs',
         children: [
           { id: 'office-chairs', name: 'Office' },
-          { id: 'living-room-chairs', name: 'Living Room' }
-        ]
-      }
-    ]
-  }
+          { id: 'living-room-chairs', name: 'Living Room' },
+        ],
+      },
+    ],
+  },
 ];

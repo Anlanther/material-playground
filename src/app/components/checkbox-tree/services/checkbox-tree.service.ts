@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { TreeNode, FlatTreeNode, CheckboxState } from '../models/tree-node.interface';
+import { BehaviorSubject } from 'rxjs';
+import {
+  CheckboxState,
+  FlatTreeNode,
+  TreeNode,
+} from '../models/tree-node.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CheckboxTreeService {
   private selectedNodesSubject = new BehaviorSubject<Set<string>>(new Set());
@@ -25,8 +29,12 @@ export class CheckboxTreeService {
     const flatData: FlatTreeNode[] = [];
     this.flatNodeMap.clear();
 
-    const flatten = (nodes: TreeNode[], level: number = 0, parent?: FlatTreeNode): void => {
-      nodes.forEach(node => {
+    const flatten = (
+      nodes: TreeNode[],
+      level: number = 0,
+      parent?: FlatTreeNode,
+    ): void => {
+      nodes.forEach((node) => {
         const flatNode: FlatTreeNode = {
           id: node.id,
           name: node.name,
@@ -35,7 +43,7 @@ export class CheckboxTreeService {
           isExpanded: false,
           isVisible: true,
           hasChildren: !!(node.children && node.children.length > 0),
-          parent
+          parent,
         };
 
         this.flatNodeMap.set(node.id, flatNode);
@@ -58,25 +66,29 @@ export class CheckboxTreeService {
   getCheckboxState(nodeId: string): CheckboxState {
     const selectedNodes = this.selectedNodesSubject.value;
     const node = this.flatNodeMap.get(nodeId);
-    
+
     if (!node) {
       return { checked: false, indeterminate: false };
     }
 
     const isChecked = selectedNodes.has(nodeId);
     const descendants = this.getDescendants(nodeId);
-    const checkedDescendants = descendants.filter(d => selectedNodes.has(d.id));
-    
+    const checkedDescendants = descendants.filter((d) =>
+      selectedNodes.has(d.id),
+    );
+
     if (!node.hasChildren) {
       return { checked: isChecked, indeterminate: false };
     }
 
-    const allDescendantsChecked = descendants.length > 0 && checkedDescendants.length === descendants.length;
+    const allDescendantsChecked =
+      descendants.length > 0 &&
+      checkedDescendants.length === descendants.length;
     const someDescendantsChecked = checkedDescendants.length > 0;
 
     return {
       checked: allDescendantsChecked,
-      indeterminate: someDescendantsChecked && !allDescendantsChecked
+      indeterminate: someDescendantsChecked && !allDescendantsChecked,
     };
   }
 
@@ -86,7 +98,7 @@ export class CheckboxTreeService {
   toggleNode(nodeId: string): void {
     const selectedNodes = new Set(this.selectedNodesSubject.value);
     const node = this.flatNodeMap.get(nodeId);
-    
+
     if (!node) return;
 
     const currentState = this.getCheckboxState(nodeId);
@@ -95,20 +107,20 @@ export class CheckboxTreeService {
     if (shouldCheck) {
       selectedNodes.add(nodeId);
       // Select all descendants
-      this.getDescendants(nodeId).forEach(descendant => {
+      this.getDescendants(nodeId).forEach((descendant) => {
         selectedNodes.add(descendant.id);
       });
     } else {
       selectedNodes.delete(nodeId);
       // Deselect all descendants
-      this.getDescendants(nodeId).forEach(descendant => {
+      this.getDescendants(nodeId).forEach((descendant) => {
         selectedNodes.delete(descendant.id);
       });
     }
 
     // Update parent states
     this.updateParentStates(nodeId, selectedNodes);
-    
+
     this.selectedNodesSubject.next(selectedNodes);
   }
 
@@ -121,8 +133,8 @@ export class CheckboxTreeService {
 
     const descendants: FlatTreeNode[] = [];
     const allNodes = this.dataSourceSubject.value;
-    const nodeIndex = allNodes.findIndex(n => n.id === nodeId);
-    
+    const nodeIndex = allNodes.findIndex((n) => n.id === nodeId);
+
     if (nodeIndex === -1) return [];
 
     for (let i = nodeIndex + 1; i < allNodes.length; i++) {
@@ -143,7 +155,7 @@ export class CheckboxTreeService {
 
     const ancestors: FlatTreeNode[] = [];
     let current = node.parent;
-    
+
     while (current) {
       ancestors.push(current);
       current = current.parent;
@@ -157,11 +169,11 @@ export class CheckboxTreeService {
    */
   private updateParentStates(nodeId: string, selectedNodes: Set<string>): void {
     const ancestors = this.getAncestors(nodeId);
-    
-    ancestors.forEach(ancestor => {
+
+    ancestors.forEach((ancestor) => {
       const siblings = this.getDirectChildren(ancestor.id);
-      const checkedSiblings = siblings.filter(sibling => 
-        this.isNodeOrAllDescendantsSelected(sibling.id, selectedNodes)
+      const checkedSiblings = siblings.filter((sibling) =>
+        this.isNodeOrAllDescendantsSelected(sibling.id, selectedNodes),
       );
 
       if (checkedSiblings.length === siblings.length && siblings.length > 0) {
@@ -180,8 +192,8 @@ export class CheckboxTreeService {
     if (!node) return [];
 
     const allNodes = this.dataSourceSubject.value;
-    const nodeIndex = allNodes.findIndex(n => n.id === nodeId);
-    
+    const nodeIndex = allNodes.findIndex((n) => n.id === nodeId);
+
     if (nodeIndex === -1) return [];
 
     const children: FlatTreeNode[] = [];
@@ -199,7 +211,10 @@ export class CheckboxTreeService {
   /**
    * Check if a node or all its descendants are selected
    */
-  private isNodeOrAllDescendantsSelected(nodeId: string, selectedNodes: Set<string>): boolean {
+  private isNodeOrAllDescendantsSelected(
+    nodeId: string,
+    selectedNodes: Set<string>,
+  ): boolean {
     const node = this.flatNodeMap.get(nodeId);
     if (!node) return false;
 
@@ -208,10 +223,12 @@ export class CheckboxTreeService {
     }
 
     const descendants = this.getDescendants(nodeId);
-    const leafDescendants = descendants.filter(d => !d.hasChildren);
-    
-    return leafDescendants.length > 0 && 
-           leafDescendants.every(leaf => selectedNodes.has(leaf.id));
+    const leafDescendants = descendants.filter((d) => !d.hasChildren);
+
+    return (
+      leafDescendants.length > 0 &&
+      leafDescendants.every((leaf) => selectedNodes.has(leaf.id))
+    );
   }
 
   /**
@@ -219,28 +236,28 @@ export class CheckboxTreeService {
    */
   filterTree(searchTerm: string): void {
     const allNodes = this.dataSourceSubject.value;
-    
+
     if (!searchTerm.trim()) {
       // Show all nodes
-      allNodes.forEach(node => node.isVisible = true);
+      allNodes.forEach((node) => (node.isVisible = true));
     } else {
       const searchLower = searchTerm.toLowerCase();
-      
+
       // First, mark all nodes as invisible
-      allNodes.forEach(node => node.isVisible = false);
-      
+      allNodes.forEach((node) => (node.isVisible = false));
+
       // Find matching nodes
-      const matchingNodes = allNodes.filter(node => 
-        node.name.toLowerCase().includes(searchLower)
+      const matchingNodes = allNodes.filter((node) =>
+        node.name.toLowerCase().includes(searchLower),
       );
-      
+
       // Make matching nodes and their ancestors visible
-      matchingNodes.forEach(node => {
+      matchingNodes.forEach((node) => {
         node.isVisible = true;
         this.makeAncestorsVisible(node.id, allNodes);
       });
     }
-    
+
     this.dataSourceSubject.next([...allNodes]);
   }
 
@@ -248,7 +265,7 @@ export class CheckboxTreeService {
    * Make all ancestors of a node visible
    */
   private makeAncestorsVisible(nodeId: string, allNodes: FlatTreeNode[]): void {
-    const node = allNodes.find(n => n.id === nodeId);
+    const node = allNodes.find((n) => n.id === nodeId);
     if (!node) return;
 
     let current = node.parent;
@@ -275,10 +292,10 @@ export class CheckboxTreeService {
   getSelectedNodeNames(): string[] {
     const selectedNodes = this.selectedNodesSubject.value;
     const allNodes = this.dataSourceSubject.value;
-    
+
     return allNodes
-      .filter(node => selectedNodes.has(node.id))
-      .map(node => node.name)
+      .filter((node) => selectedNodes.has(node.id))
+      .map((node) => node.name)
       .sort();
   }
 

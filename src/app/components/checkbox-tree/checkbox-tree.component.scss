@@ -85,6 +85,7 @@
     align-items: center;
     width: 100%;
     gap: 0.5rem;
+    padding-left: 10px;
   }
 
   .node-spacer {
@@ -126,8 +127,18 @@
 
 .expandable-node {
   .node-content {
-    padding-left: 0;
+    padding-left: 10px;
   }
+
+  // Nested children get additional indentation
+  .tree-node {
+    margin-left: 20px;
+  }
+}
+
+// Hide collapsed tree nodes
+.tree-invisible {
+  display: none;
 }
 
 // Selected Section
