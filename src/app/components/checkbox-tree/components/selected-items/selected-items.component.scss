@@ -1,0 +1,42 @@
+.selected-section {
+  margin-top: 1rem;
+}
+
+.selected-header {
+  margin-bottom: 0.5rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+
+.selected-container {
+  overflow-y: auto;
+  border: 1px solid var(--mat-divider-color, rgba(0, 0, 0, 0.12));
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+.selected-items {
+  mat-chip-set {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+}
+
+.no-selection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--mat-text-secondary, rgba(0, 0, 0, 0.6));
+  font-style: italic;
+
+  mat-icon {
+    font-size: 1.2rem;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}

@@ -1,25 +1,10 @@
 <div class="checkbox-tree-container">
   <!-- Search Filter -->
-  <div class="search-section" *ngIf="showSearchFilter">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search tree...</mat-label>
-      <input
-        matInput
-        [formControl]="searchControl"
-        placeholder="Type to filter nodes"
-      />
-      <mat-icon matSuffix>search</mat-icon>
-      <button
-        mat-icon-button
-        matSuffix
-        *ngIf="searchControl.value"
-        (click)="clearSearch()"
-        aria-label="Clear search"
-      >
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-  </div>
+  <app-search-filter
+    [searchControl]="searchControl"
+    [showSearchFilter]="showSearchFilter"
+    (clearSearch)="clearSearch()"
+  ></app-search-filter>
 
   <!-- Tree Section -->
   <div class="tree-section">
@@ -122,35 +107,10 @@
   </ng-template>
 
   <!-- Selected Items Section -->
-  <div class="selected-section" *ngIf="showSelectedItems">
-    <div class="selected-header">
-      <h3>Selected Items ({{ (store.selectedCount$ | async) || 0 }})</h3>
-    </div>
-
-    <div class="selected-container" [style.max-height]="maxChildHeight">
-      <div
-        class="selected-items"
-        *ngIf="selectedNodes.length > 0; else noSelection"
-      >
-        <mat-chip-set>
-          <mat-chip
-            *ngFor="
-              let item of selectedNodes;
-              let i = index;
-              trackBy: trackBySelectedItem
-            "
-          >
-            {{ item }}
-          </mat-chip>
-        </mat-chip-set>
-      </div>
-
-      <ng-template #noSelection>
-        <div class="no-selection">
-          <mat-icon>info</mat-icon>
-          <span>No items selected</span>
-        </div>
-      </ng-template>
-    </div>
-  </div>
+  <app-selected-items
+    [selectedNodes]="selectedNodes"
+    [selectedCount$]="store.selectedCount$"
+    [maxChildHeight]="maxChildHeight"
+    [showSelectedItems]="showSelectedItems"
+  ></app-selected-items>
 </div>

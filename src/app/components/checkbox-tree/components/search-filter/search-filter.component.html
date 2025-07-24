@@ -1,0 +1,21 @@
+<!-- Search Filter -->
+<div class="search-section" *ngIf="showSearchFilter">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search tree...</mat-label>
+    <input
+      matInput
+      [formControl]="searchControl"
+      placeholder="Type to filter nodes"
+    />
+    <mat-icon matSuffix>search</mat-icon>
+    <button
+      mat-icon-button
+      matSuffix
+      *ngIf="searchControl.value"
+      (click)="onClearSearch()"
+      aria-label="Clear search"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>

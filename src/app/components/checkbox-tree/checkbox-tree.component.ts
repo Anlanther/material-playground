@@ -11,6 +11,8 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 
 import { MaterialModule } from '../../modules/material.module';
+import { SearchFilterComponent } from './components/search-filter/search-filter.component';
+import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
 import { SAMPLE_TREE_DATA } from './data/sample-tree-data';
 import { CheckboxState, TreeNode } from './models/tree-node.interface';
 import { CheckboxTreePersistenceService } from './services/checkbox-tree-persistence.service';
@@ -18,7 +20,13 @@ import { CheckboxTreeStore } from './store/checkbox-tree.store';
 
 @Component({
   selector: 'app-checkbox-tree',
-  imports: [CommonModule, MaterialModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    MaterialModule,
+    ReactiveFormsModule,
+    SearchFilterComponent,
+    SelectedItemsComponent,
+  ],
   templateUrl: './checkbox-tree.component.html',
   styleUrls: ['./checkbox-tree.component.scss'],
   providers: [CheckboxTreeStore],
@@ -242,12 +250,5 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    */
   trackByNodeId(index: number, node: TreeNode): string {
     return node.id;
-  }
-
-  /**
-   * Track function for selected items
-   */
-  trackBySelectedItem(index: number, item: string): string {
-    return item;
   }
 }

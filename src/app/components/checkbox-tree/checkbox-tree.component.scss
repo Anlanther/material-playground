@@ -8,14 +8,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-// Search Section
-.search-section {
-  .search-field {
-    width: 100%;
-    min-width: 300px;
-  }
-}
-
 // Tree Section
 .tree-section {
   .tree-header {
@@ -233,86 +225,6 @@
   display: none;
 }
 
-// Selected Section
-.selected-section {
-  .selected-header {
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--mat-divider-color, #e0e0e0);
-
-    h3 {
-      margin: 0;
-      color: var(--mat-text-primary-on-background, #212121);
-      font-size: 1.2rem;
-      font-weight: 500;
-    }
-  }
-
-  .selected-container {
-    overflow-y: auto;
-    border: 1px solid var(--mat-divider-color, #e0e0e0);
-    border-radius: 4px;
-    background: var(--mat-card-background-color, #fff);
-    padding: 1rem;
-    min-height: 100px;
-
-    // Custom scrollbar styling
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 4px;
-
-      &:hover {
-        background: #a8a8a8;
-      }
-    }
-  }
-
-  .selected-items {
-    mat-chip-set {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-
-      mat-chip {
-        font-size: 0.75rem;
-        border-radius: 16px;
-
-        &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-      }
-    }
-  }
-
-  .no-selection {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.5rem;
-    color: var(--mat-text-secondary-on-background, #757575);
-    font-size: 0.875rem;
-    height: 100px;
-
-    mat-icon {
-      font-size: 2rem;
-      width: 2rem;
-      height: 2rem;
-      opacity: 0.6;
-    }
-  }
-}
-
 // Responsive Design
 @media (max-width: 768px) {
   .checkbox-tree-container {
@@ -320,8 +232,7 @@
     gap: 1rem;
   }
 
-  .tree-section .tree-header,
-  .selected-section .selected-header {
+  .tree-section .tree-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
@@ -329,10 +240,6 @@
     h3 {
       font-size: 1.1rem;
     }
-  }
-
-  .search-section .search-field {
-    min-width: 250px;
   }
 }
 
@@ -348,10 +255,6 @@
       font-size: 0.8rem;
     }
   }
-
-  .search-section .search-field {
-    min-width: 200px;
-  }
 }
 
 // High contrast support
@@ -360,25 +263,18 @@
     border-bottom-color: #000;
   }
 
-  .tree-container,
-  .selected-container {
+  .tree-container {
     border-color: #000;
   }
 
-  .tree-header,
-  .selected-header {
+  .tree-header {
     border-bottom-color: #000;
   }
 }
 
 // Reduced motion support
 @media (prefers-reduced-motion: reduce) {
-  .tree-node,
-  .selected-items mat-chip {
+  .tree-node {
     transition: none;
-  }
-
-  .selected-items mat-chip:hover {
-    transform: none;
   }
 }
