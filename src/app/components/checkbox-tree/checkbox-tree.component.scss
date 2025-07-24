@@ -153,37 +153,38 @@
   }
 }
 
-// Child nodes container with scrolling (ONLY for first child level)
+// Child nodes container (general styling)
 .child-nodes-container {
   width: 100%;
   overflow: hidden; // Prevent any overflow issues
+}
 
-  .child-nodes-scroll {
-    max-height: 30vh; // 30vh height limit for first child level only
-    overflow-y: auto;
-    overflow-x: hidden; // Prevent horizontal scrolling
-    border-left: 2px solid var(--mat-divider-color, #e0e0e0);
-    margin-left: 1rem;
-    background-color: var(--mat-app-surface-variant, #f8f9fa);
-    min-width: 0; // Prevent flex children from overflowing
+// Child nodes container with scrolling (ONLY for first child level)
+.child-nodes-scroll {
+  max-height: 30vh; // 30vh height limit for first child level only
+  overflow-y: auto;
+  overflow-x: hidden; // Prevent horizontal scrolling
+  border-left: 2px solid var(--mat-divider-color, #e0e0e0);
+  margin-left: 1rem;
+  background-color: var(--mat-app-surface-variant, #f8f9fa);
+  min-width: 0; // Prevent flex children from overflowing
 
-    // Custom scrollbar styling for child containers
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
+  // Custom scrollbar styling for child containers
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
 
-    &::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 3px;
-    }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
 
-    &::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 3px;
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
 
-      &:hover {
-        background: #a8a8a8;
-      }
+    &:hover {
+      background: #a8a8a8;
     }
   }
 }
