@@ -13,13 +13,15 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { MaterialModule } from '../../modules/material.module';
 import { SAMPLE_TREE_DATA } from './data/sample-tree-data';
 import { CheckboxState, TreeNode } from './models/tree-node.interface';
-import { CheckboxTreeService } from './services/checkbox-tree.service';
+import { CheckboxTreePersistenceService } from './services/checkbox-tree-persistence.service';
+import { CheckboxTreeStore } from './store/checkbox-tree.store';
 
 @Component({
   selector: 'app-checkbox-tree',
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   templateUrl: './checkbox-tree.component.html',
   styleUrls: ['./checkbox-tree.component.scss'],
+  providers: [CheckboxTreeStore],
 })
 export class CheckboxTreeComponent implements OnInit, OnDestroy {
   @Input() treeData: TreeNode[] = SAMPLE_TREE_DATA;
@@ -37,43 +39,83 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   currentTreeData: TreeNode[] = []; // Current tree data (filtered or original)
 
   private destroy$ = new Subject<void>();
-  constructor(private checkboxTreeService: CheckboxTreeService) {}
+
+  constructor(
+    private store: CheckboxTreeStore,
+    private persistenceService: CheckboxTreePersistenceService,
+  ) {}
 
   ngOnInit(): void {
-    // Initialize tree data
-    this.currentTreeData = this.treeData;
-    this.flattenedNodes = this.flattenTree(this.treeData);
-    this.filteredNodes = [...this.flattenedNodes];
-
-    // Subscribe to selection changes
-    this.checkboxTreeService.selectedNodes$
+    // Load saved state first, then initialize
+    this.persistenceService
+      .loadSelectedNodes()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((selectedNodes) => {
-        this.selectedNodes = this.checkboxTreeService.getSelectedNodeNames();
-        this.selectionChange.emit(Array.from(selectedNodes));
+      .subscribe((savedState) => {
+        const savedSelections = savedState?.selectedNodeIds || [];
+
+        // Initialize the store with tree data and saved selections
+        this.store.initializeWithSavedState({
+          treeData: this.treeData,
+          savedSelections,
+        });
+      });
+
+    // Subscribe to store state
+    this.store.selectedNodeNames$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((selectedNodeNames: string[]) => {
+        this.selectedNodes = selectedNodeNames;
+      });
+
+    this.store.selectedNodes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((selectedNodes: Set<string>) => {
+        const selectedArray = Array.from(selectedNodes);
+        this.selectionChange.emit(selectedArray);
+
+        // Auto-save selections when they change (with debounce)
+        this.persistenceService
+          .saveSelectedNodes(selectedArray)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe();
+      });
+
+    this.store.flattenedNodes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((flattenedNodes: TreeNode[]) => {
+        this.flattenedNodes = flattenedNodes;
+        this.filteredNodes = flattenedNodes;
+      });
+
+    this.store.expandedNodes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((expandedNodes: Set<string>) => {
+        this.expandedNodes = expandedNodes;
+      });
+
+    this.store.currentTreeData$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((currentTreeData: TreeNode[]) => {
+        this.currentTreeData = currentTreeData;
+      });
+
+    this.store.originalExpandedNodes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((originalExpandedNodes: Set<string>) => {
+        this.originalExpandedNodes = originalExpandedNodes;
       });
 
     // Subscribe to search input changes
     this.searchControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe((searchTerm) => {
-        this.filterTree(searchTerm || '');
+        this.store.setSearchTerm(searchTerm || '');
       });
-
-    // Initialize the service with the tree data
-    this.initializeServiceData(this.treeData);
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
-   * Initialize service data by converting tree to flat structure for selection tracking
-   */
-  private initializeServiceData(treeData: TreeNode[]): void {
-    this.checkboxTreeService.transformToFlatTree(treeData);
   }
 
   /**
@@ -98,104 +140,6 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
     });
 
     return flattened;
-  }
-
-  /**
-   * Filter tree based on search term
-   */
-  private filterTree(searchTerm: string): void {
-    if (!searchTerm.trim()) {
-      // Restore original expansion state and show all data
-      this.expandedNodes = new Set(this.originalExpandedNodes);
-      this.currentTreeData = this.treeData;
-      this.refreshTree();
-      return;
-    }
-
-    // Store current expansion state if we're starting a new search
-    if (
-      !this.searchControl.value ||
-      this.searchControl.value.length <= searchTerm.length
-    ) {
-      this.originalExpandedNodes = new Set(this.expandedNodes);
-    }
-
-    // Clear expansion for search
-    this.expandedNodes.clear();
-
-    // Filter and show matching nodes with their parents
-    this.currentTreeData = this.filterTreeData(
-      this.treeData,
-      searchTerm.toLowerCase(),
-    );
-
-    // Only expand nodes that have matching children or are matches themselves
-    this.autoExpandForSearch(this.currentTreeData, searchTerm.toLowerCase());
-
-    // Flatten the filtered data
-    this.filteredNodes = this.flattenTree(this.currentTreeData);
-  }
-
-  /**
-   * Auto-expand only nodes that contain matches or have matching children
-   */
-  private autoExpandForSearch(nodes: TreeNode[], searchTerm: string): void {
-    nodes.forEach((node) => {
-      if (node.children && node.children.length > 0) {
-        // Check if this node or any of its children match
-        const hasMatchingDescendants = this.hasMatchingDescendants(
-          node,
-          searchTerm,
-        );
-
-        if (hasMatchingDescendants) {
-          this.expandedNodes.add(node.id);
-          this.autoExpandForSearch(node.children, searchTerm);
-        }
-      }
-    });
-  }
-
-  /**
-   * Check if a node has any descendants that match the search term
-   */
-  private hasMatchingDescendants(node: TreeNode, searchTerm: string): boolean {
-    if (node.name.toLowerCase().includes(searchTerm)) {
-      return true;
-    }
-
-    if (node.children) {
-      return node.children.some((child) =>
-        this.hasMatchingDescendants(child, searchTerm),
-      );
-    }
-
-    return false;
-  }
-
-  /**
-   * Recursively filter tree data to only include matching nodes and their parents
-   */
-  private filterTreeData(nodes: TreeNode[], searchTerm: string): TreeNode[] {
-    return nodes.reduce((filtered: TreeNode[], node: TreeNode) => {
-      // Check if current node matches the search term
-      const isMatch = node.name.toLowerCase().includes(searchTerm);
-
-      // Check if any children match (recursively)
-      const filteredChildren = node.children
-        ? this.filterTreeData(node.children, searchTerm)
-        : [];
-
-      // Include node if it matches or has matching children
-      if (isMatch || filteredChildren.length > 0) {
-        filtered.push({
-          ...node,
-          children: filteredChildren,
-        });
-      }
-
-      return filtered;
-    }, []);
   }
 
   /**
@@ -247,40 +191,28 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    * Toggle node expansion
    */
   toggleExpansion(node: TreeNode): void {
-    if (this.expandedNodes.has(node.id)) {
-      this.expandedNodes.delete(node.id);
-    } else {
-      this.expandedNodes.add(node.id);
-    }
-
-    // Refresh the tree
-    this.refreshTree();
+    this.store.toggleNodeExpansion(node.id);
   }
 
   /**
    * Refresh the tree display
    */
   private refreshTree(): void {
-    this.flattenedNodes = this.flattenTree(this.currentTreeData);
-    if (this.searchControl.value) {
-      this.filterTree(this.searchControl.value);
-    } else {
-      this.filteredNodes = [...this.flattenedNodes];
-    }
+    // This is now handled by the store
   }
 
   /**
    * Get checkbox state for a node
    */
   getCheckboxState(node: TreeNode): CheckboxState {
-    return this.checkboxTreeService.getCheckboxState(node.id);
+    return this.store.getCurrentCheckboxState(node.id);
   }
 
   /**
    * Toggle node selection
    */
   toggleNodeSelection(node: TreeNode): void {
-    this.checkboxTreeService.toggleNode(node.id);
+    this.store.toggleNodeSelection(node.id);
   }
 
   /**
@@ -294,7 +226,36 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
    * Clear all selections
    */
   clearAllSelections(): void {
-    this.checkboxTreeService.clearAllSelections();
+    this.store.clearAllSelections();
+  }
+
+  /**
+   * Clear saved state (for testing purposes)
+   */
+  clearSavedState(): void {
+    this.persistenceService
+      .clearSavedState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('💾 Saved state cleared successfully');
+      });
+  }
+
+  /**
+   * Manually save current state (for testing purposes)
+   */
+  saveCurrentState(): void {
+    this.store.selectedNodes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((selectedNodes) => {
+        const selectedArray = Array.from(selectedNodes);
+        this.persistenceService
+          .saveSelectedNodes(selectedArray)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            console.log('💾 Current state saved manually');
+          });
+      });
   }
 
   /**

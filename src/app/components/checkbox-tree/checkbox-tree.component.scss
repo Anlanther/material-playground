@@ -32,6 +32,21 @@
       font-size: 1.2rem;
       font-weight: 500;
     }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      button {
+        min-width: unset;
+        font-size: 0.875rem;
+
+        &:not(:last-child) {
+          margin-right: 0.25rem;
+        }
+      }
+    }
   }
 
   .tree-container {

@@ -25,14 +25,27 @@
   <div class="tree-section">
     <div class="tree-header">
       <h3>Select Items</h3>
-      <button
-        mat-button
-        color="warn"
-        (click)="clearAllSelections()"
-        [disabled]="getSelectedCount() === 0"
-      >
-        Clear All
-      </button>
+      <div class="header-actions">
+        <button
+          mat-button
+          color="primary"
+          (click)="saveCurrentState()"
+          [disabled]="getSelectedCount() === 0"
+        >
+          Save State
+        </button>
+        <button mat-button color="accent" (click)="clearSavedState()">
+          Clear Saved
+        </button>
+        <button
+          mat-button
+          color="warn"
+          (click)="clearAllSelections()"
+          [disabled]="getSelectedCount() === 0"
+        >
+          Clear All
+        </button>
+      </div>
     </div>
 
     <div class="tree-container">
