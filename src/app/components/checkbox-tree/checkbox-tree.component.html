@@ -30,7 +30,7 @@
           mat-button
           color="primary"
           (click)="saveCurrentState()"
-          [disabled]="getSelectedCount() === 0"
+          [disabled]="(store.selectedCount$ | async) === 0"
         >
           Save State
         </button>
@@ -41,7 +41,7 @@
           mat-button
           color="warn"
           (click)="clearAllSelections()"
-          [disabled]="getSelectedCount() === 0"
+          [disabled]="(store.selectedCount$ | async) === 0"
         >
           Clear All
         </button>
@@ -101,30 +101,12 @@
         </mat-checkbox>
       </div>
 
-      <!-- Child nodes container with scroll (ONLY for level 0 -> level 1) -->
+      <!-- Child nodes container (with or without scroll) -->
       <div
-        *ngIf="hasChild(node) && isExpanded(node) && level === 0"
+        *ngIf="hasChild(node) && isExpanded(node)"
         class="child-nodes-container"
+        [class.child-nodes-scroll]="level === 0"
       >
-        <div class="child-nodes-scroll">
-          <ng-container
-            *ngFor="
-              let childNode of getChildNodes(node);
-              trackBy: trackByNodeId
-            "
-          >
-            <ng-container
-              *ngTemplateOutlet="
-                treeNodeTemplate;
-                context: { $implicit: childNode, level: level + 1 }
-              "
-            ></ng-container>
-          </ng-container>
-        </div>
-      </div>
-
-      <!-- Child nodes without scroll container (for all other levels) -->
-      <div *ngIf="hasChild(node) && isExpanded(node) && level > 0">
         <ng-container
           *ngFor="let childNode of getChildNodes(node); trackBy: trackByNodeId"
         >
@@ -142,7 +124,7 @@
   <!-- Selected Items Section -->
   <div class="selected-section" *ngIf="showSelectedItems">
     <div class="selected-header">
-      <h3>Selected Items ({{ getSelectedCount() }})</h3>
+      <h3>Selected Items ({{ (store.selectedCount$ | async) || 0 }})</h3>
     </div>
 
     <div class="selected-container" [style.max-height]="maxChildHeight">

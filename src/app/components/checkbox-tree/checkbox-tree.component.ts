@@ -32,16 +32,13 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
 
   searchControl = new FormControl('');
   selectedNodes: string[] = [];
-  flattenedNodes: TreeNode[] = [];
-  filteredNodes: TreeNode[] = [];
   expandedNodes = new Set<string>();
-  originalExpandedNodes = new Set<string>(); // Store original expansion state
-  currentTreeData: TreeNode[] = []; // Current tree data (filtered or original)
+  currentTreeData: TreeNode[] = [];
 
   private destroy$ = new Subject<void>();
 
   constructor(
-    private store: CheckboxTreeStore,
+    public store: CheckboxTreeStore,
     private persistenceService: CheckboxTreePersistenceService,
   ) {}
 
@@ -80,13 +77,6 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
           .subscribe();
       });
 
-    this.store.flattenedNodes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((flattenedNodes: TreeNode[]) => {
-        this.flattenedNodes = flattenedNodes;
-        this.filteredNodes = flattenedNodes;
-      });
-
     this.store.expandedNodes$
       .pipe(takeUntil(this.destroy$))
       .subscribe((expandedNodes: Set<string>) => {
@@ -97,12 +87,6 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((currentTreeData: TreeNode[]) => {
         this.currentTreeData = currentTreeData;
-      });
-
-    this.store.originalExpandedNodes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((originalExpandedNodes: Set<string>) => {
-        this.originalExpandedNodes = originalExpandedNodes;
       });
 
     // Subscribe to search input changes
@@ -119,27 +103,19 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Flatten tree structure into a flat array with level information
+   * Create a tree node with computed properties
    */
-  private flattenTree(nodes: TreeNode[], level: number = 0): TreeNode[] {
-    const flattened: TreeNode[] = [];
-
-    nodes.forEach((node) => {
-      const flatNode: TreeNode = {
-        ...node,
-        level,
-        expandable: !!(node.children && node.children.length > 0),
-        isExpanded: this.expandedNodes.has(node.id),
-        isVisible: true,
-      };
-      flattened.push(flatNode);
-
-      if (node.children && this.expandedNodes.has(node.id)) {
-        flattened.push(...this.flattenTree(node.children, level + 1));
-      }
-    });
-
-    return flattened;
+  private createTreeNodeWithProperties(
+    node: TreeNode,
+    level: number,
+  ): TreeNode {
+    return {
+      ...node,
+      level,
+      expandable: !!(node.children && node.children.length > 0),
+      isExpanded: this.expandedNodes.has(node.id),
+      isVisible: true,
+    };
   }
 
   /**
@@ -157,27 +133,19 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
       return [];
     }
 
-    // Return the children from the original tree data, mapped with flattened properties
-    return parentNode.children.map((child) => ({
-      ...child,
-      level: (parentNode.level || 0) + 1,
-      expandable: !!(child.children && child.children.length > 0),
-      isExpanded: this.expandedNodes.has(child.id),
-      isVisible: true,
-    }));
+    const parentLevel = parentNode.level || 0;
+    return parentNode.children.map((child) =>
+      this.createTreeNodeWithProperties(child, parentLevel + 1),
+    );
   }
 
   /**
    * Get only top-level nodes from current tree data
    */
   getTopLevelNodes(): TreeNode[] {
-    return this.currentTreeData.map((node) => ({
-      ...node,
-      level: 0,
-      expandable: !!(node.children && node.children.length > 0),
-      isExpanded: this.expandedNodes.has(node.id),
-      isVisible: true,
-    }));
+    return this.currentTreeData.map((node) =>
+      this.createTreeNodeWithProperties(node, 0),
+    );
   }
 
   /**
@@ -195,17 +163,10 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Refresh the tree display
-   */
-  private refreshTree(): void {
-    // This is now handled by the store
-  }
-
-  /**
    * Get checkbox state for a node
    */
   getCheckboxState(node: TreeNode): CheckboxState {
-    return this.store.getCurrentCheckboxState(node.id);
+    return this.store.getCheckboxState(node.id);
   }
 
   /**
@@ -236,9 +197,7 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
     this.persistenceService
       .clearSavedState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        console.log('💾 Saved state cleared successfully');
-      });
+      .subscribe();
   }
 
   /**
@@ -252,17 +211,8 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
         this.persistenceService
           .saveSelectedNodes(selectedArray)
           .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            console.log('💾 Current state saved manually');
-          });
+          .subscribe();
       });
-  }
-
-  /**
-   * Get selected count
-   */
-  getSelectedCount(): number {
-    return this.selectedNodes.length;
   }
 
   /**

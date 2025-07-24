@@ -9,8 +9,6 @@ export interface CheckboxTreeState {
   selectedNodes: Set<string>;
   expandedNodes: Set<string>;
   searchTerm: string;
-  flattenedNodes: TreeNode[];
-  filteredNodes: TreeNode[];
   originalExpandedNodes: Set<string>;
   currentTreeData: TreeNode[];
   isInitialized: boolean;
@@ -21,8 +19,6 @@ const initialState: CheckboxTreeState = {
   selectedNodes: new Set<string>(),
   expandedNodes: new Set<string>(),
   searchTerm: '',
-  flattenedNodes: [],
-  filteredNodes: [],
   originalExpandedNodes: new Set<string>(),
   currentTreeData: [],
   isInitialized: false,
@@ -39,8 +35,6 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
   readonly selectedNodes$ = this.select((state) => state.selectedNodes);
   readonly expandedNodes$ = this.select((state) => state.expandedNodes);
   readonly searchTerm$ = this.select((state) => state.searchTerm);
-  readonly flattenedNodes$ = this.select((state) => state.flattenedNodes);
-  readonly filteredNodes$ = this.select((state) => state.filteredNodes);
   readonly currentTreeData$ = this.select((state) => state.currentTreeData);
   readonly originalExpandedNodes$ = this.select(
     (state) => state.originalExpandedNodes,
@@ -68,8 +62,6 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
     ...state,
     treeData,
     currentTreeData: treeData,
-    flattenedNodes: this.flattenTree(treeData, state.expandedNodes),
-    filteredNodes: this.flattenTree(treeData, state.expandedNodes),
   }));
 
   readonly setSelectedNodes = this.updater(
@@ -83,10 +75,6 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
     (state, expandedNodes: Set<string>) => ({
       ...state,
       expandedNodes: new Set(expandedNodes),
-      flattenedNodes: this.flattenTree(state.currentTreeData, expandedNodes),
-      filteredNodes: state.searchTerm
-        ? this.flattenTree(state.currentTreeData, expandedNodes)
-        : this.flattenTree(state.currentTreeData, expandedNodes),
     }),
   );
 
@@ -98,18 +86,9 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
       newExpandedNodes.add(nodeId);
     }
 
-    const newFlattenedNodes = this.flattenTree(
-      state.currentTreeData,
-      newExpandedNodes,
-    );
-
     return {
       ...state,
       expandedNodes: newExpandedNodes,
-      flattenedNodes: newFlattenedNodes,
-      filteredNodes: state.searchTerm
-        ? this.filterFlattenedNodes(newFlattenedNodes, state.searchTerm)
-        : newFlattenedNodes,
     };
   });
 
@@ -163,19 +142,12 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
       );
     }
 
-    const newFlattenedNodes = this.flattenTree(
-      newCurrentTreeData,
-      newExpandedNodes,
-    );
-
     return {
       ...state,
       searchTerm,
       expandedNodes: newExpandedNodes,
       currentTreeData: newCurrentTreeData,
       originalExpandedNodes: newOriginalExpandedNodes,
-      flattenedNodes: newFlattenedNodes,
-      filteredNodes: newFlattenedNodes,
     };
   });
 
@@ -229,42 +201,6 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
 
     traverse(treeData);
     return nodeMap;
-  }
-
-  private flattenTree(
-    nodes: TreeNode[],
-    expandedNodes: Set<string>,
-    level: number = 0,
-  ): TreeNode[] {
-    const flattened: TreeNode[] = [];
-
-    nodes.forEach((node) => {
-      const flatNode: TreeNode = {
-        ...node,
-        level,
-        expandable: !!(node.children && node.children.length > 0),
-        isExpanded: expandedNodes.has(node.id),
-        isVisible: true,
-      };
-      flattened.push(flatNode);
-
-      if (node.children && expandedNodes.has(node.id)) {
-        flattened.push(
-          ...this.flattenTree(node.children, expandedNodes, level + 1),
-        );
-      }
-    });
-
-    return flattened;
-  }
-
-  private filterFlattenedNodes(
-    nodes: TreeNode[],
-    searchTerm: string,
-  ): TreeNode[] {
-    return nodes.filter((node) =>
-      node.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
   }
 
   private filterTreeData(nodes: TreeNode[], searchTerm: string): TreeNode[] {
@@ -379,7 +315,7 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
     this.updateParentSelection(parent, selectedNodes, nodeMap);
   }
 
-  getCurrentCheckboxState(nodeId: string): CheckboxState {
+  getCheckboxState(nodeId: string): CheckboxState {
     const state = this.get();
     const nodeMap = this.createNodeMap(state.treeData);
     const node = nodeMap.get(nodeId);
@@ -407,41 +343,6 @@ export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {
     } else {
       return { checked: false, indeterminate: true };
     }
-  }
-
-  getCheckboxState(nodeId: string): Observable<CheckboxState> {
-    return this.select(
-      this.selectedNodes$,
-      this.treeData$,
-      (selectedNodes, treeData) => {
-        const nodeMap = this.createNodeMap(treeData);
-        const node = nodeMap.get(nodeId);
-
-        if (!node) {
-          return { checked: false, indeterminate: false };
-        }
-
-        const isSelected = selectedNodes.has(nodeId);
-
-        if (!node.children || node.children.length === 0) {
-          return { checked: isSelected, indeterminate: false };
-        }
-
-        const selectedChildrenCount = this.countSelectedChildren(
-          node.children,
-          selectedNodes,
-        );
-        const totalChildren = this.countTotalChildren(node.children);
-
-        if (selectedChildrenCount === 0) {
-          return { checked: false, indeterminate: false };
-        } else if (selectedChildrenCount === totalChildren) {
-          return { checked: true, indeterminate: false };
-        } else {
-          return { checked: false, indeterminate: true };
-        }
-      },
-    );
   }
 
   private countSelectedChildren(
