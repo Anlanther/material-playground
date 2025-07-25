@@ -11,7 +11,10 @@
         <app-color-showcase></app-color-showcase>
       }
       @case (workspace.CheckboxTree) {
-        <app-checkbox-tree></app-checkbox-tree>
+        <app-checkbox-tree
+          [initialState]="checkboxSavedState$ | async"
+          (selectionChange)="onCheckboxTreeSelectionChange($event)"
+        ></app-checkbox-tree>
       }
     }
   }

@@ -2,27 +2,9 @@ import { Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { CheckboxState, TreeNode } from '../models/tree-node.interface';
-
-export interface CheckboxTreeState {
-  treeData: TreeNode[];
-  selectedNodes: Set<string>;
-  expandedNodes: Set<string>;
-  searchTerm: string;
-  originalExpandedNodes: Set<string>;
-  currentTreeData: TreeNode[];
-  isInitialized: boolean;
-}
-
-const initialState: CheckboxTreeState = {
-  treeData: [],
-  selectedNodes: new Set<string>(),
-  expandedNodes: new Set<string>(),
-  searchTerm: '',
-  originalExpandedNodes: new Set<string>(),
-  currentTreeData: [],
-  isInitialized: false,
-};
+import { CheckboxState } from '../models/checkbox-state.model';
+import { TreeNode } from '../models/tree-node.model';
+import { CheckboxTreeState, initialState } from './checkbox-tree.state';
 
 @Injectable()
 export class CheckboxTreeStore extends ComponentStore<CheckboxTreeState> {

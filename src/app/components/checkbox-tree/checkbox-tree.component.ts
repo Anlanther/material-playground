@@ -7,14 +7,16 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Observable, Subscription, tap } from 'rxjs';
 
 import { MaterialModule } from '../../modules/material.module';
 import { SearchFilterComponent } from './components/search-filter/search-filter.component';
 import { SelectedItemsComponent } from './components/selected-items/selected-items.component';
 import { SAMPLE_TREE_DATA } from './data/sample-tree-data';
-import { CheckboxState, TreeNode } from './models/tree-node.interface';
+import { CheckboxState } from './models/checkbox-state.model';
+import { CheckboxTreeSavedState } from './models/checkbox-tree-saved-state.model';
+import { TreeNode } from './models/tree-node.model';
 import { CheckboxTreePersistenceService } from './services/checkbox-tree-persistence.service';
 import { CheckboxTreeStore } from './store/checkbox-tree.store';
 
@@ -34,16 +36,19 @@ import { CheckboxTreeStore } from './store/checkbox-tree.store';
 export class CheckboxTreeComponent implements OnInit, OnDestroy {
   @Input() treeData: TreeNode[] = SAMPLE_TREE_DATA;
   @Input() maxChildHeight: string = '300px';
-  @Input() showSelectedItems: boolean = true;
   @Input() showSearchFilter: boolean = true;
+  @Input() baseNodePaddingPxl: number = 10;
+  @Input() indentionStep: number = 20;
+  @Input() initialState: CheckboxTreeSavedState | null = null;
+
   @Output() selectionChange = new EventEmitter<string[]>();
 
-  searchControl = new FormControl('');
-  selectedNodes: string[] = [];
+  selectedNodes$!: Observable<string[]>;
+
   expandedNodes = new Set<string>();
   currentTreeData: TreeNode[] = [];
 
-  private destroy$ = new Subject<void>();
+  private subs = new Subscription();
 
   constructor(
     public store: CheckboxTreeStore,
@@ -51,204 +56,109 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Load saved state first, then initialize
-    this.persistenceService
-      .loadSelectedNodes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((savedState) => {
-        const savedSelections = savedState?.selectedNodeIds || [];
+    this.store.initializeWithSavedState({
+      treeData: this.treeData,
+      savedSelections: this.initialState?.selectedNodeIds || [],
+    });
 
-        // Initialize the store with tree data and saved selections
-        this.store.initializeWithSavedState({
-          treeData: this.treeData,
-          savedSelections,
-        });
-      });
+    this.selectedNodes$ = this.store.selectedNodeNames$.pipe(
+      tap((selectedNodes) => {
+        this.selectionChange.emit(selectedNodes);
+      }),
+    );
 
-    // Subscribe to store state
-    this.store.selectedNodeNames$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((selectedNodeNames: string[]) => {
-        this.selectedNodes = selectedNodeNames;
-      });
-
-    this.store.selectedNodes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((selectedNodes: Set<string>) => {
-        const selectedArray = Array.from(selectedNodes);
-        this.selectionChange.emit(selectedArray);
-
-        // Auto-save selections when they change (with debounce)
-        this.persistenceService
-          .saveSelectedNodes(selectedArray)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe();
-      });
-
-    this.store.expandedNodes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((expandedNodes: Set<string>) => {
+    this.subs.add(
+      this.store.expandedNodes$.subscribe((expandedNodes: Set<string>) => {
         this.expandedNodes = expandedNodes;
-      });
+      }),
+    );
 
-    this.store.currentTreeData$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((currentTreeData: TreeNode[]) => {
+    this.subs.add(
+      this.store.currentTreeData$.subscribe((currentTreeData: TreeNode[]) => {
         this.currentTreeData = currentTreeData;
-      });
-
-    // Subscribe to search input changes
-    this.searchControl.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe((searchTerm) => {
-        this.store.setSearchTerm(searchTerm || '');
-      });
+      }),
+    );
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.subs.unsubscribe();
   }
 
-  /**
-   * Create a tree node with computed properties
-   */
-  private createTreeNodeWithProperties(
-    node: TreeNode,
-    level: number,
-  ): TreeNode {
-    return {
-      ...node,
-      level,
-      expandable: !!(node.children && node.children.length > 0),
-      isExpanded: this.expandedNodes.has(node.id),
-      isVisible: true,
-    };
-  }
-
-  /**
-   * Check if node has children
-   */
   hasChild(node: TreeNode): boolean {
     return !!(node.children && node.children.length > 0);
   }
 
-  /**
-   * Get child nodes for a given parent node from the original tree data
-   */
   getChildNodes(parentNode: TreeNode): TreeNode[] {
     if (!parentNode.children) {
       return [];
     }
 
-    const parentLevel = parentNode.level || 0;
+    const parentLevel = parentNode.level ?? 0;
     return parentNode.children.map((child) =>
       this.createTreeNodeWithProperties(child, parentLevel + 1),
     );
   }
 
-  /**
-   * Get only top-level nodes from current tree data
-   */
   getTopLevelNodes(): TreeNode[] {
     return this.currentTreeData.map((node) =>
       this.createTreeNodeWithProperties(node, 0),
     );
   }
 
-  /**
-   * Check if node is expanded
-   */
   isExpanded(node: TreeNode): boolean {
     return this.expandedNodes.has(node.id);
   }
 
-  /**
-   * Toggle node expansion
-   */
   toggleExpansion(node: TreeNode): void {
     this.store.toggleNodeExpansion(node.id);
   }
 
-  /**
-   * Get checkbox state for a node
-   */
   getCheckboxState(node: TreeNode): CheckboxState {
     return this.store.getCheckboxState(node.id);
   }
 
-  /**
-   * Toggle node selection
-   */
   toggleNodeSelection(node: TreeNode): void {
     this.store.toggleNodeSelection(node.id);
   }
 
-  /**
-   * Clear search filter
-   */
-  clearSearch(): void {
-    this.searchControl.setValue('');
-  }
-
-  /**
-   * Clear all selections
-   */
   clearAllSelections(): void {
     this.store.clearAllSelections();
   }
 
-  /**
-   * Clear saved state (for testing purposes)
-   */
   clearSavedState(): void {
-    this.persistenceService
-      .clearSavedState()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe();
+    this.subs.add(this.persistenceService.clearSavedState().subscribe());
   }
 
-  /**
-   * Manually save current state (for testing purposes)
-   */
   saveCurrentState(): void {
-    this.store.selectedNodes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((selectedNodes) => {
-        const selectedArray = Array.from(selectedNodes);
-        this.persistenceService
-          .saveSelectedNodes(selectedArray)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe();
-      });
+    this.subs.add(
+      this.selectedNodes$.subscribe((selectedNodes) => {
+        this.persistenceService.saveSelectedNodes(selectedNodes);
+      }),
+    );
   }
 
-  /**
-   * Get node padding based on level
-   */
   getNodePadding(node: TreeNode): string {
-    const level = node.level || 0;
-
-    // Top-level nodes (level 0) get minimal padding
-    if (level === 0) {
-      return '10px';
-    }
-
-    // First child level (level 1) gets base padding since they're in a scroll container
-    if (level === 1) {
-      return '10px';
-    }
-
-    // Deeper levels (2+) get progressive indentation within the scroll container
-    // Subtract 1 from level since level 1 is the base level in the scroll container
+    const level = node.level ?? 0;
     const indentLevel = level - 1;
-    return `${indentLevel * 20 + 10}px`;
+    return `${indentLevel * this.indentionStep + this.baseNodePaddingPxl}px`;
   }
 
-  /**
-   * Track function for ngFor
-   */
-  trackByNodeId(index: number, node: TreeNode): string {
+  trackByNodeId(_: number, node: TreeNode): string {
     return node.id;
+  }
+
+  private createTreeNodeWithProperties(
+    node: TreeNode,
+    level: number,
+  ): TreeNode {
+    const hasChildren = node.children && node.children.length > 0;
+
+    return {
+      ...node,
+      level,
+      expandable: hasChildren,
+      isExpanded: this.expandedNodes.has(node.id),
+      isVisible: true,
+    };
   }
 }

@@ -1,10 +1,6 @@
 <div class="checkbox-tree-container">
   <!-- Search Filter -->
-  <app-search-filter
-    [searchControl]="searchControl"
-    [showSearchFilter]="showSearchFilter"
-    (clearSearch)="clearSearch()"
-  ></app-search-filter>
+  <app-search-filter></app-search-filter>
 
   <!-- Tree Section -->
   <div class="tree-section">
@@ -108,7 +104,7 @@
 
   <!-- Selected Items Section -->
   <app-selected-items
-    [selectedNodes]="selectedNodes"
+    [selectedNodes]="(selectedNodes$ | async) ?? []"
     [selectedCount$]="store.selectedCount$"
     [maxChildHeight]="maxChildHeight"
     [showSelectedItems]="showSelectedItems"

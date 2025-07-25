@@ -6,6 +6,7 @@ import { FILTER_INPUT } from '../../constants/dummy-data/fund-input-dummy';
 import { WorkspaceName } from '../../constants/workspace-name.enum';
 import { WidgetInput } from '../../models/widget-input.model';
 import { CheckboxTreeComponent } from '../checkbox-tree/checkbox-tree.component';
+import { CheckboxTreePersistenceService } from '../checkbox-tree/services/checkbox-tree-persistence.service';
 import { ColorShowcaseComponent } from '../color-showcase/color-showcase.component';
 import { FormFilterModule } from '../form-filter/form-filter.module';
 import { SavedFilter } from '../form-filter/models/saved-filter.model';
@@ -26,8 +27,10 @@ import { WorkspaceSelectorComponent } from '../workspace-selector/workspace-sele
 })
 export class GridContainerComponent {
   private route = inject(ActivatedRoute);
+  private persistenceService = inject(CheckboxTreePersistenceService);
 
   workspaceName$ = this.route.params.pipe(map((params) => params['workspace']));
+  checkboxSavedState$ = this.persistenceService.loadSelectedNodes();
 
   filterState = signal<WidgetInput>(FILTER_INPUT);
 
@@ -42,5 +45,10 @@ export class GridContainerComponent {
     }));
 
     console.log('Saved state:', savedState);
+  }
+
+  onCheckboxTreeSelectionChange(selectedNodes: string[]) {
+    console.log('Selected nodes from grid container:', selectedNodes);
+    this.persistenceService.saveSelectedNodes(selectedNodes);
   }
 }

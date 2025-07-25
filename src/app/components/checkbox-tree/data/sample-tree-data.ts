@@ -1,4 +1,4 @@
-import { TreeNode } from '../models/tree-node.interface';
+import { TreeNode } from '../models/tree-node.model';
 
 export const SAMPLE_TREE_DATA: TreeNode[] = [
   {

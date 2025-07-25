@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
-
-export interface CheckboxTreeSavedState {
-  selectedNodeIds: string[];
-  timestamp: number;
-}
+import { CheckboxTreeSavedState } from '../models/checkbox-tree-saved-state.model';
 
 @Injectable({
   providedIn: 'root',

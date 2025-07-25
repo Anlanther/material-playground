@@ -8,8 +8,3 @@ export interface TreeNode {
   isExpanded?: boolean;
   isVisible?: boolean;
 }
-
-export interface CheckboxState {
-  checked: boolean;
-  indeterminate: boolean;
-}
