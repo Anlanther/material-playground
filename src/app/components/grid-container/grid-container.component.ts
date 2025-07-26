@@ -6,6 +6,7 @@ import { FILTER_INPUT } from '../../constants/dummy-data/fund-input-dummy';
 import { WorkspaceName } from '../../constants/workspace-name.enum';
 import { WidgetInput } from '../../models/widget-input.model';
 import { CheckboxTreeComponent } from '../checkbox-tree/checkbox-tree.component';
+import { MOCK_DATA_SOURCE } from '../checkbox-tree/dummy-data/data-source.mock';
 import { ColorShowcaseComponent } from '../color-showcase/color-showcase.component';
 import { FormFilterModule } from '../form-filter/form-filter.module';
 import { SavedFilter } from '../form-filter/models/saved-filter.model';
@@ -33,6 +34,10 @@ export class GridContainerComponent {
 
   get workspace() {
     return WorkspaceName;
+  }
+
+  get dataSource() {
+    return MOCK_DATA_SOURCE;
   }
 
   updateSavedState(savedState: SavedFilter) {
