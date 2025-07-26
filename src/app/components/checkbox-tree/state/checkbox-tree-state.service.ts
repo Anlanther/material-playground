@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
-import { tap } from 'rxjs';
-import { DataSource, TreeNode } from '../models';
+import { Observable, tap } from 'rxjs';
+import { DataSource, SavedStates, TreeNode } from '../models';
 import { DataStateService } from '../services/data-state.service';
 import { CheckboxTreeState, DEFAULT_STATE } from './checkbox-tree-state';
 
@@ -32,4 +32,40 @@ export class CheckboxTreeStateService extends ComponentStore<CheckboxTreeState> 
     this.dataStateService.updateParentChildCheckboxState(node);
     return state;
   });
+
+  readonly setSavedStates = this.updater((state, savedStates: SavedStates) => ({
+    ...state,
+    savedStates,
+  }));
+
+  readonly initialiseStateEffect = this.effect(
+    (
+      trigger$: Observable<{
+        dataSource: DataSource;
+        savedStates: SavedStates;
+      }>,
+    ) =>
+      trigger$.pipe(
+        tap(({ dataSource, savedStates }) => {
+          const activeSavedState = savedStates.states.find(
+            (state) => state.id === savedStates.selectedId,
+          );
+
+          if (!activeSavedState || savedStates.selectedId === null) {
+            this.setTreeData(dataSource);
+            this.setSavedStates(savedStates);
+            return;
+          }
+
+          this.setSavedStates(savedStates);
+          this.setTreeData(activeSavedState.treeData);
+        }),
+      ),
+  );
+
+  // this.updater(
+  //   (state, data: { dataSource: DataSource; savedStates: SavedStates }) => ({
+  //     ...state,
+  //   }),
+  // );
 }

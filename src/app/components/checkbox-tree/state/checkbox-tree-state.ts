@@ -1,4 +1,4 @@
-import { SavedSelectedState, TreeNode } from '../models';
+import { SavedStates, TreeNode } from '../models';
 
 export interface CheckboxTreeState {
   originalTreeData: TreeNode[];
@@ -6,10 +6,7 @@ export interface CheckboxTreeState {
   search: {
     query: string;
   };
-  savedStates: {
-    selectedId: string | null;
-    savedSelectedStates: SavedSelectedState[];
-  };
+  savedStates: SavedStates;
 }
 
 export const DEFAULT_STATE: CheckboxTreeState = {
@@ -20,6 +17,6 @@ export const DEFAULT_STATE: CheckboxTreeState = {
   },
   savedStates: {
     selectedId: null,
-    savedSelectedStates: [],
+    states: [],
   },
 };

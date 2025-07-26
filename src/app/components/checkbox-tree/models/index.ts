@@ -1,4 +1,4 @@
 export * from './data-source.model';
-export * from './saved-selected-state.model';
-export * from './selected-node.model';
+export * from './saved-states.model';
+export * from './state-snapshot.model';
 export * from './tree-node.model';
