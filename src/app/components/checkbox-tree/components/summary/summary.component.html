@@ -1,0 +1,34 @@
+@let selectedFilters = selectedFilters$ | async;
+
+@if (selectedFilters) {
+  @if (selectedFilters.length === 0) {
+    <div class="no-filters">No Filters Selected</div>
+  } @else {
+    @for (category of selectedFilters; track category.rootId) {
+      <div class="category-group">
+        <span class="">
+          {{ category.rootName }}
+        </span>
+        <br />
+        <span class="category-items">
+          @if (categoryDisplayState[category.rootId]) {
+            {{ category.items.join(", ") }}
+            <button
+              mat-flat-button
+              (click)="toggleCategoryDisplay(category.rootId)"
+            >
+              Hide
+            </button>
+          } @else {
+            <button
+              mat-flat-button
+              (click)="toggleCategoryDisplay(category.rootId)"
+            >
+              View
+            </button>
+          }
+        </span>
+      </div>
+    }
+  }
+}

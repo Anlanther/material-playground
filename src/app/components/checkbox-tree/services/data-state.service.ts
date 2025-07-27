@@ -43,11 +43,17 @@ export class DataStateService {
 
     const collectSelectedLeafNodes = (nodes: TreeNode[]) => {
       for (const node of nodes) {
-        if (node.isLeaf && node.checkboxState.checked) {
+        const isCheckedLeaf = node.isLeaf && node.checkboxState.checked;
+        if (isCheckedLeaf) {
           if (!result[node.rootId]) {
             result[node.rootId] = [];
           }
-          result[node.rootId].push(node.id);
+          result[node.rootId].push({
+            id: node.id,
+            name: node.name,
+            rootId: node.rootId,
+            rootName: treeData.find((n) => n.id === node.rootId)?.name ?? '',
+          });
         }
         if (node.children.length > 0) {
           collectSelectedLeafNodes(node.children);

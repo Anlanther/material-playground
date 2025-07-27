@@ -1,11 +1,8 @@
 export interface SelectedFilters {
-  [key: string]: string[];
-}
-
-export interface SelectedFilter {
-  rootId: string;
-  selectedFilters: {
+  [key: string]: {
     id: string;
     name: string;
+    rootId: string;
+    rootName: string;
   }[];
 }

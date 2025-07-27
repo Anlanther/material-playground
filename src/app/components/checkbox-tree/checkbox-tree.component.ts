@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { MaterialModule } from '../../modules/material.module';
 import { FilterComponent } from './components/filter/filter.component';
 import { StateManagerComponent } from './components/state-manager/state-manager.component';
+import { SummaryComponent } from './components/summary/summary.component';
 import { DataSource, SavedStates, TreeNode } from './models';
 import { SelectedFilters } from './models/selected-filter.model';
 import { CheckboxTreeStateService } from './state/checkbox-tree-state.service';
@@ -22,6 +23,7 @@ import { CheckboxTreeStateService } from './state/checkbox-tree-state.service';
     MaterialModule,
     StateManagerComponent,
     FilterComponent,
+    SummaryComponent,
   ],
   templateUrl: './checkbox-tree.component.html',
   styleUrls: ['./checkbox-tree.component.scss'],
@@ -32,6 +34,8 @@ import { CheckboxTreeStateService } from './state/checkbox-tree-state.service';
 export class CheckboxTreeComponent implements OnInit, OnDestroy {
   dataSource = input.required<DataSource>();
   showFilter = input<boolean>(true);
+  showSummary = input<boolean>(true);
+  showStateManager = input<boolean>(true);
   indentionStep = input<number>(16);
   savedStates = input<SavedStates>();
   selectedFilters = output<SelectedFilters>();
