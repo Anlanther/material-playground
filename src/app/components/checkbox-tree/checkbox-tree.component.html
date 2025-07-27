@@ -37,6 +37,10 @@
         </button>
       }
 
+      @if (node.isLeaf) {
+        <div class="expand-spacer"></div>
+      }
+
       <mat-checkbox
         [checked]="node.checkboxState.checked"
         [indeterminate]="node.checkboxState.indeterminate"

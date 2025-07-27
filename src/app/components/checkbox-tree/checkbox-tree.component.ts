@@ -25,6 +25,9 @@ import { CheckboxTreeStateService } from './state/checkbox-tree-state.service';
   ],
   templateUrl: './checkbox-tree.component.html',
   styleUrls: ['./checkbox-tree.component.scss'],
+  host: {
+    '[style.--child-max-height]': 'childMaxHeight()',
+  },
 })
 export class CheckboxTreeComponent implements OnInit, OnDestroy {
   dataSource = input.required<DataSource>();
@@ -32,6 +35,7 @@ export class CheckboxTreeComponent implements OnInit, OnDestroy {
   indentionStep = input<number>(16);
   savedStates = input<SavedStates>();
   selectedFilters = output<SelectedFilters>();
+  childMaxHeight = input<string>('30vh');
 
   stateService = inject(CheckboxTreeStateService);
 

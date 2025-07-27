@@ -1,0 +1,5 @@
+// Child nodes container with scrolling (ONLY for first child level)
+.child-nodes-scroll {
+  max-height: var(--child-max-height);
+  overflow-y: auto;
+}

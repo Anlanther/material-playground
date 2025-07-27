@@ -14,6 +14,7 @@
         <app-checkbox-tree
           [dataSource]="dataSource"
           [savedStates]="savedStates"
+          [childMaxHeight]="'50vh'"
           (selectedFilters)="updateSelectedFilters($event)"
         ></app-checkbox-tree>
       }

@@ -42,10 +42,8 @@ export class CheckboxTreeStateService extends ComponentStore<CheckboxTreeState> 
   }
 
   readonly setTreeData = this.updater((state, dataSource: DataSource) => {
-    console.log('setTreeData called with dataSource:', dataSource);
     const convertedData =
       this.dataStateService.convertDataToTreeData(dataSource);
-    console.log('Converted data length:', convertedData.length);
     return {
       ...state,
       originalTreeData: convertedData,
