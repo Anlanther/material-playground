@@ -158,7 +158,7 @@ export class DataStateService {
       }
     }
 
-    throw Error(`Node with id ${targetId} not found`);
+    throw new Error(`Node with id ${targetId} not found`);
   }
 
   private updateNodeInTree(
