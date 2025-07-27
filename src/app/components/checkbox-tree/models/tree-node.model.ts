@@ -8,5 +8,4 @@ export interface TreeNode {
     indeterminate: boolean;
   };
   children: TreeNode[];
-  parentNode?: TreeNode;
 }

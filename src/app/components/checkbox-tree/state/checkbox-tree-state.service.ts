@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ComponentStore } from '@ngrx/component-store';
 import { Observable, tap } from 'rxjs';
-import { DataSource, SavedStates, TreeNode } from '../models';
+import { DataSource, SavedStates } from '../models';
 import { DataStateService } from '../services/data-state.service';
 import { CheckboxTreeState, DEFAULT_STATE } from './checkbox-tree-state';
 
@@ -23,15 +23,18 @@ export class CheckboxTreeStateService extends ComponentStore<CheckboxTreeState> 
     treeData: this.dataStateService.convertDataToTreeData(dataSource),
   }));
 
-  readonly updateExpandedForNode = this.updater((state, node: TreeNode) => {
-    node.isExpanded = !node.isExpanded;
-    return state;
-  });
+  readonly updateExpandedForNode = this.updater((state, nodeId: string) => ({
+    ...state,
+    treeData: this.dataStateService.updateNodeExpansion(state.treeData, nodeId),
+  }));
 
-  readonly updateNodeCheckboxState = this.updater((state, node: TreeNode) => {
-    this.dataStateService.updateParentChildCheckboxState(node);
-    return state;
-  });
+  readonly updateNodeCheckboxState = this.updater((state, nodeId: string) => ({
+    ...state,
+    treeData: this.dataStateService.updateCheckboxStates(
+      state.treeData,
+      nodeId,
+    ),
+  }));
 
   readonly setSavedStates = this.updater((state, savedStates: SavedStates) => ({
     ...state,

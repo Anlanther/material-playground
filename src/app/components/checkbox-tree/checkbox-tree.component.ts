@@ -33,10 +33,10 @@ export class CheckboxTreeComponent implements OnInit {
   }
 
   toggleExpansion(node: TreeNode): void {
-    this.stateService.updateExpandedForNode(node);
+    this.stateService.updateExpandedForNode(node.id);
   }
 
   toggleSelection(node: TreeNode): void {
-    this.stateService.updateNodeCheckboxState(node);
+    this.stateService.updateNodeCheckboxState(node.id);
   }
 }
