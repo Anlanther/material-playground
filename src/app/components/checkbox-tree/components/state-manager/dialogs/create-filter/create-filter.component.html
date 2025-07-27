@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Create Filter</h2>
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Filter Name</mat-label>
+    <input type="text" matInput [formControl]="filterForm" />
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-flat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button [disabled]="!filterForm.value" (click)="confirm()">
+    Submit
+  </button>
+</mat-dialog-actions>

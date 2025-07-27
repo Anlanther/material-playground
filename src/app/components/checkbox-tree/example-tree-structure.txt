@@ -1,0 +1,106 @@
+- Electronics
+    - Phones
+        - Android
+            - Samsung
+                - S8
+                - S9
+                - S10
+                - S20
+                - S21
+                - S22
+                - S23
+                - S24
+                - Note 8
+                - Note 9
+                - Note 10
+                - Note 20
+                - A50
+                - A51
+                - A52
+            - Google
+                - Pixel 1
+                - Pixel 2
+                - Pixel 3
+                - Pixel 4
+                - Pixel 5
+                - Pixel 6
+                - Pixel 7
+                - Pixel 8
+                - Pixel 8 Pro
+                - Pixel 8a
+                - Pixel 7a
+                - Pixel 6a
+            - OnePlus
+                - 6
+                - 6T
+                - 7
+                - 7T
+                - 8
+                - 8T
+                - 9
+                - 9 Pro
+                - 10
+                - 10 Pro
+                - 11
+                - 12
+        - iOS
+            - iPhone
+                - 8
+                - X
+                - XR
+                - XS
+                - 11
+                - 11 Pro
+                - 12
+                - 12 Pro
+                - 13
+                - 13 Pro
+                - 14
+                - 14 Pro
+                - 15
+                - 15 Pro
+    - Laptops
+        - Apple
+            - MacBook Air
+            - MacBook Pro 13
+            - MacBook Pro 14
+            - MacBook Pro 16
+            - MacBook 12
+            - MacBook Retina
+            - MacBook Pro 2015
+            - MacBook Pro 2016
+            - MacBook Pro 2017
+            - MacBook Pro 2018
+            - MacBook Pro 2019
+            - MacBook Pro 2020
+        - Dell
+            - XPS 13
+            - XPS 15
+            - XPS 17
+            - Inspiron 13
+            - Inspiron 15
+            - Inspiron 17
+            - Latitude 5400
+            - Latitude 7400
+            - Precision 5550
+            - Precision 7550
+            - Alienware m15
+            - Alienware m17
+        - Lenovo
+            - ThinkPad X1 Carbon
+            - ThinkPad T14
+            - ThinkPad T15
+            - ThinkPad P1
+            - ThinkPad L14
+            - ThinkPad E14
+            - Yoga 7i
+            - Yoga 9i
+            - Legion 5
+            - Legion 7
+            - IdeaPad 3
+            - IdeaPad 5
+- Furniture
+    - Chairs
+        - Office
+        - Living Room
+            

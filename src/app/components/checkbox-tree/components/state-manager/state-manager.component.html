@@ -1,0 +1,18 @@
+@let activeFilter = activeFilter$ | async;
+
+<div class="body">
+  <span>{{ activeFilter?.name }}</span>
+  @if (activeFilter?.id) {
+    <button mat-flat-button (click)="updateCurrentFilterSnapshot()">
+      Update Current Filter
+    </button>
+  }
+  <button mat-flat-button (click)="saveAsNewFilter()">
+    Save As New Filter
+  </button>
+  @if (activeFilter && activeFilter.treeData.length > 0) {
+    <button mat-flat-button (click)="openFilterManager()">
+      Manage Filters
+    </button>
+  }
+</div>

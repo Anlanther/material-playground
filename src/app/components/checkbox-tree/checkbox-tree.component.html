@@ -1,0 +1,86 @@
+@let treeNodes = treeNodes$ | async;
+
+@if (showFilter()) {
+  <div class="tree-filter-container">
+    <app-filter></app-filter>
+  </div>
+}
+
+@if (showStateManager()) {
+  <div class="state-manager-container">
+    <app-state-manager></app-state-manager>
+  </div>
+}
+
+<div class="tree-container">
+  @for (node of treeNodes; track trackByNodeId(node)) {
+    <ng-container
+      *ngTemplateOutlet="treeNodeTemplate; context: { $implicit: node }"
+    ></ng-container>
+  }
+</div>
+
+<ng-template #treeNodeTemplate let-node>
+  <div
+    class="tree-node"
+    [class.top-level-node]="node.level === 0"
+    [class.child-node]="node.level > 0"
+  >
+    <div class="node-content" [style.padding-left]="getNodePadding(node.level)">
+      @if (node.children && node.children.length > 0) {
+        <button
+          mat-icon-button
+          (click)="toggleExpansion(node)"
+          class="expand-button"
+        >
+          <mat-icon>
+            {{
+              node.isExpanded ? "keyboard_arrow_down" : "keyboard_arrow_right"
+            }}
+          </mat-icon>
+        </button>
+      }
+
+      @if (node.isLeaf) {
+        <div class="expand-spacer"></div>
+      }
+
+      <mat-checkbox
+        [checked]="node.checkboxState.checked"
+        [indeterminate]="node.checkboxState.indeterminate"
+        (change)="toggleSelection(node)"
+        class="node-checkbox"
+      >
+        <span class="node-name">{{ node.name }}</span>
+
+        @if (!node.isLeaf) {
+          <span class="selection-indicator">
+            ({{ node.selectedCount }}/{{ node.totalCount }})
+          </span>
+        }
+      </mat-checkbox>
+
+      @if (node.children.length > 0 && node.isExpanded) {
+        <div
+          class="child-nodes-container"
+          [class.child-nodes-scroll]="node.level === 0"
+        >
+          @for (children of node.children; track trackByNodeId(children)) {
+            <ng-container
+              *ngTemplateOutlet="
+                treeNodeTemplate;
+                context: { $implicit: children }
+              "
+            ></ng-container>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</ng-template>
+
+@if (showSummary()) {
+  <div class="summary-container">
+    <app-summary></app-summary>
+  </div>
+}

@@ -10,6 +10,14 @@
       @case (workspace.Button) {
         <app-color-showcase></app-color-showcase>
       }
+      @case (workspace.CheckboxTree) {
+        <app-checkbox-tree
+          [dataSource]="dataSource"
+          [savedStates]="savedStates"
+          [childMaxHeight]="'50vh'"
+          (selectedFilters)="updateSelectedFilters($event)"
+        ></app-checkbox-tree>
+      }
     }
   }
 </div>
