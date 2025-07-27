@@ -29,10 +29,13 @@ export class DataStateService {
         children: hasChildren
           ? this.convertDataToTreeData(s.children!, level + 1, currentRootId)
           : [],
+        selectedCount: 0,
+        totalCount: 0,
       };
       return node;
     });
-    return treeNodes;
+
+    return this.calculateNodeCounts(treeNodes);
   }
 
   convertToSelectedFilter(treeData: TreeNode[]): SelectedFilters {
@@ -89,7 +92,7 @@ export class DataStateService {
       );
     }
 
-    return updatedTree;
+    return this.calculateNodeCounts(updatedTree);
   }
 
   updateNodeExpansion(tree: TreeNode[], nodeId: string): TreeNode[] {
@@ -219,5 +222,58 @@ export class DataStateService {
     } else {
       return { checked: false, indeterminate: true };
     }
+  }
+
+  private calculateNodeCounts(nodes: TreeNode[]): TreeNode[] {
+    return nodes.map((node) => {
+      const updatedNode = { ...node };
+      const hasChildren =
+        updatedNode.children && updatedNode.children.length > 0;
+      if (hasChildren) {
+        // Recursively calculate counts for children first
+        updatedNode.children = this.calculateNodeCounts(node.children);
+
+        // Calculate counts for this node
+        const { selectedCount, totalCount } = this.getNodeCounts(updatedNode);
+        updatedNode.selectedCount = selectedCount;
+        updatedNode.totalCount = totalCount;
+      } else {
+        // Leaf node counts
+        updatedNode.selectedCount =
+          updatedNode.checkboxState.checked &&
+          !updatedNode.checkboxState.indeterminate
+            ? 1
+            : 0;
+        updatedNode.totalCount = 1;
+      }
+
+      return updatedNode;
+    });
+  }
+
+  private getNodeCounts(node: TreeNode): {
+    selectedCount: number;
+    totalCount: number;
+  } {
+    let selectedCount = 0;
+    let totalCount = 1; // Count this node
+
+    const isCheckedLeaf =
+      node.isLeaf &&
+      node.checkboxState.checked &&
+      !node.checkboxState.indeterminate;
+    if (isCheckedLeaf) {
+      selectedCount += 1;
+    }
+
+    // Count children
+    if (node.children) {
+      for (const child of node.children) {
+        selectedCount += child.selectedCount ?? 0;
+        totalCount += child.totalCount ?? 0;
+      }
+    }
+
+    return { selectedCount, totalCount };
   }
 }

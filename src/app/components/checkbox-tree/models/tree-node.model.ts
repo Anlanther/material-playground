@@ -10,4 +10,6 @@ export interface TreeNode {
     indeterminate: boolean;
   };
   children: TreeNode[];
+  selectedCount: number;
+  totalCount: number;
 }

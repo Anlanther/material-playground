@@ -47,7 +47,13 @@
         (change)="toggleSelection(node)"
         class="node-checkbox"
       >
-        {{ node.name }}
+        <span class="node-name">{{ node.name }}</span>
+
+        @if (!node.isLeaf) {
+          <span class="selection-indicator">
+            ({{ node.selectedCount }}/{{ node.totalCount }})
+          </span>
+        }
       </mat-checkbox>
 
       @if (node.children.length > 0 && node.isExpanded) {
