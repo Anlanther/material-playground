@@ -11,7 +11,11 @@
         <app-color-showcase></app-color-showcase>
       }
       @case (workspace.CheckboxTree) {
-        <app-checkbox-tree [dataSource]="dataSource"></app-checkbox-tree>
+        <app-checkbox-tree
+          [dataSource]="dataSource"
+          [savedStates]="savedStates"
+          (selectedFilters)="updateSelectedFilters($event)"
+        ></app-checkbox-tree>
       }
     }
   }

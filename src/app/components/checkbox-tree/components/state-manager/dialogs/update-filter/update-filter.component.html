@@ -1,0 +1,38 @@
+@let savedStates = savedStates$ | async;
+@let activeFilter = activeSavedState$ | async;
+
+<h2 mat-dialog-title>Create Filter</h2>
+<mat-dialog-content>
+  <span>
+    Active Filter: {{ activeFilter?.name }}
+    <button mat-flat-button (click)="deactivateFilter()">Deactivate</button>
+  </span>
+  <mat-list>
+    @for (savedState of savedStates?.states ?? []; track savedState.id) {
+      <mat-list-item>
+        @if (isEditing) {
+          <mat-form-field>
+            <mat-label>Filter Name</mat-label>
+            <input type="text" matInput [formControl]="filterNameForm" />
+          </mat-form-field>
+        } @else {
+          <span>{{ savedState.name }}</span>
+          <button mat-flat-button (click)="editFilterName(savedState)">
+            Edit
+          </button>
+        }
+        @if (activeFilter?.id !== savedState.id) {
+          <button mat-flat-button (click)="deleteFilter(savedState)">
+            Delete
+          </button>
+          <button mat-flat-button (click)="setActive(savedState)">
+            Set Active
+          </button>
+        }
+      </mat-list-item>
+    }
+  </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-flat-button (click)="close()">Close</button>
+</mat-dialog-actions>

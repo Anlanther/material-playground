@@ -1,5 +1,13 @@
 @let treeNodes = treeNodes$ | async;
 
+<div class="tree-filter-container">
+  <app-filter></app-filter>
+</div>
+
+<div class="state-manager-container">
+  <app-state-manager></app-state-manager>
+</div>
+
 <div class="tree-container">
   @for (node of treeNodes; track trackByNodeId(node)) {
     <ng-container

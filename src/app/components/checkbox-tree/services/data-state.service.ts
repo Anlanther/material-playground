@@ -1,27 +1,60 @@
 import { Injectable } from '@angular/core';
 import { DataSource, TreeNode } from '../models';
+import { SelectedFilters } from '../models/selected-filter.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataStateService {
-  convertDataToTreeData(data: DataSource, level = 0): TreeNode[] {
+  convertDataToTreeData(
+    data: DataSource,
+    level = 0,
+    rootId?: string,
+  ): TreeNode[] {
     const treeNodes: TreeNode[] = data.map((s) => {
+      const currentRootId = rootId ?? s.id;
+      const hasChildren = s.children && s.children.length > 0;
+
       const node: TreeNode = {
         id: s.id,
         name: s.name,
         level,
+        rootId: currentRootId,
+        isLeaf: !hasChildren,
         isExpanded: false,
         checkboxState: {
           checked: false,
           indeterminate: false,
         },
-        children: this.convertDataToTreeData(s.children ?? [], level + 1),
+        children: hasChildren
+          ? this.convertDataToTreeData(s.children!, level + 1, currentRootId)
+          : [],
       };
-
       return node;
     });
     return treeNodes;
+  }
+
+  convertToSelectedFilter(treeData: TreeNode[]): SelectedFilters {
+    const result: SelectedFilters = {};
+
+    const collectSelectedLeafNodes = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        if (node.isLeaf && node.checkboxState.checked) {
+          if (!result[node.rootId]) {
+            result[node.rootId] = [];
+          }
+          result[node.rootId].push(node.id);
+        }
+        if (node.children.length > 0) {
+          collectSelectedLeafNodes(node.children);
+        }
+      }
+    };
+
+    collectSelectedLeafNodes(treeData);
+
+    return result;
   }
 
   updateCheckboxStates(tree: TreeNode[], changedNodeId: string): TreeNode[] {
@@ -60,13 +93,39 @@ export class DataStateService {
   }
 
   updateNodeExpansion(tree: TreeNode[], nodeId: string): TreeNode[] {
+    const nodePath = this.findNodePath(tree, nodeId);
+    const targetNode = nodePath[nodePath.length - 1];
+
+    if (targetNode.isLeaf) {
+      return tree;
+    }
+
     return this.updateNodeInTree(tree, nodeId, (node) => ({
       ...node,
       isExpanded: !node.isExpanded,
     }));
   }
 
-  // Helper methods
+  filterTreeData(nodes: TreeNode[], searchTerm: string): TreeNode[] {
+    return nodes.reduce((filtered: TreeNode[], node: TreeNode) => {
+      const isMatch = node.name.toLowerCase().includes(searchTerm);
+      const filteredChildren = node.children
+        ? this.filterTreeData(node.children, searchTerm)
+        : [];
+
+      if (isMatch || filteredChildren.length > 0) {
+        filtered.push({
+          ...node,
+          children: filteredChildren,
+          // Expand parent nodes that contain matches so they're visible
+          isExpanded: filteredChildren.length > 0 ? true : node.isExpanded,
+        });
+      }
+
+      return filtered;
+    }, []);
+  }
+
   private findNodePath(
     tree: TreeNode[],
     targetId: string,
@@ -74,12 +133,19 @@ export class DataStateService {
   ): TreeNode[] {
     for (const node of tree) {
       const currentPath = [...path, node];
-      if (node.id === targetId) {
+      const isTargetNode = node.id === targetId;
+      const hasChildren = node.children.length > 0;
+      if (isTargetNode) {
         return currentPath;
       }
-      if (node.children.length > 0) {
-        const found = this.findNodePath(node.children, targetId, currentPath);
-        if (found) return found;
+      if (hasChildren) {
+        try {
+          const found = this.findNodePath(node.children, targetId, currentPath);
+          return found;
+        } catch (error) {
+          // Continue searching in other branches if not found in this subtree
+          continue;
+        }
       }
     }
 
@@ -93,11 +159,11 @@ export class DataStateService {
   ): TreeNode[] {
     return tree.map((node) => {
       const isCurrentNode = node.id === nodeId;
+      const hasChildren = !node.isLeaf && node.children.length > 0;
       if (isCurrentNode) {
         return updateFn(node);
       }
 
-      const hasChildren = node.children.length > 0;
       if (hasChildren) {
         const updatedChildren = this.updateNodeInTree(
           node.children,
@@ -118,7 +184,9 @@ export class DataStateService {
     return children.map((child) => ({
       ...child,
       checkboxState: { checked, indeterminate: false },
-      children: this.updateChildrenCheckboxes(child.children, checked),
+      children: child.isLeaf
+        ? child.children
+        : this.updateChildrenCheckboxes(child.children, checked),
     }));
   }
 
