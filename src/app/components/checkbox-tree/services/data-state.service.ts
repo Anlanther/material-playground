@@ -262,21 +262,25 @@ export class DataStateService {
     totalCount: number;
   } {
     let selectedCount = 0;
-    let totalCount = 1; // Count this node
+    let totalCount = 0;
 
     const isCheckedLeaf =
       node.isLeaf &&
       node.checkboxState.checked &&
       !node.checkboxState.indeterminate;
-    if (isCheckedLeaf) {
-      selectedCount += 1;
-    }
 
-    // Count children
-    if (node.children) {
-      for (const child of node.children) {
-        selectedCount += child.selectedCount ?? 0;
-        totalCount += child.totalCount ?? 0;
+    if (node.isLeaf) {
+      totalCount = 1;
+      if (isCheckedLeaf) {
+        selectedCount += 1;
+      }
+    } else {
+      // Count children
+      if (node.children) {
+        for (const child of node.children) {
+          selectedCount += child.selectedCount ?? 0;
+          totalCount += child.totalCount ?? 0;
+        }
       }
     }
 
